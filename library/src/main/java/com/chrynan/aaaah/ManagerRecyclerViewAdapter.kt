@@ -2,9 +2,12 @@ package com.chrynan.aaaah
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 
-class ManagerRecyclerViewAdapter<T : Any>(private val adapters: Set<AnotherAdapter<*>> = emptySet()) : RecyclerView.Adapter<ManagerRecyclerViewAdapter.ViewHolder>() {
+class ManagerRecyclerViewAdapter<T : Any>(private val adapters: Set<AnotherAdapter<*>> = emptySet()) : RecyclerView.Adapter<ManagerRecyclerViewAdapter.ViewHolder>(),
+        ListUpdateCallback,
+        ItemListUpdater<T> {
 
     companion object {
 
@@ -12,7 +15,7 @@ class ManagerRecyclerViewAdapter<T : Any>(private val adapters: Set<AnotherAdapt
         private const val INVALID_VIEW_TYPE = -1
     }
 
-    private val items: List<T> = emptyList()
+    override var items: List<T> = emptyList()
 
     override fun getItemCount() = items.size
 
@@ -30,6 +33,14 @@ class ManagerRecyclerViewAdapter<T : Any>(private val adapters: Set<AnotherAdapt
 
         getAdapterForItem(item)?.bindItem(holder.itemView, item)
     }
+
+    override fun onChanged(position: Int, count: Int, payload: Any?) = notifyItemChanged(position, payload)
+
+    override fun onMoved(fromPosition: Int, toPosition: Int) = notifyItemMoved(fromPosition, toPosition)
+
+    override fun onInserted(position: Int, count: Int) = notifyItemRangeInserted(position, count)
+
+    override fun onRemoved(position: Int, count: Int) = notifyItemRangeRemoved(position, count)
 
     private fun getAdapterForItem(item: T) = adapters.firstOrNull { it.handlesItem(item) }
 
