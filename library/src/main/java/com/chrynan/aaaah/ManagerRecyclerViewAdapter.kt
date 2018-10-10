@@ -1,9 +1,9 @@
 package com.chrynan.aaaah
 
+import android.support.v7.util.ListUpdateCallback
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.ListUpdateCallback
-import androidx.recyclerview.widget.RecyclerView
 
 class ManagerRecyclerViewAdapter<T : Any>(private val adapters: Set<AnotherAdapter<*>> = emptySet()) : RecyclerView.Adapter<ManagerRecyclerViewAdapter.ViewHolder>(),
         ListUpdateCallback,
