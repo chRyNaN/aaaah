@@ -34,7 +34,7 @@ class ManagerRecyclerViewAdapter<T : Any>(private val adapters: Set<AnotherAdapt
         getAdapterForItem(item)?.bindItem(holder.itemView, item)
     }
 
-    override fun onChanged(position: Int, count: Int, payload: Any?) = notifyItemChanged(position, payload)
+    override fun onChanged(position: Int, count: Int, payload: Any?) = notifyItemRangeChanged(position, count, payload)
 
     override fun onMoved(fromPosition: Int, toPosition: Int) = notifyItemMoved(fromPosition, toPosition)
 
