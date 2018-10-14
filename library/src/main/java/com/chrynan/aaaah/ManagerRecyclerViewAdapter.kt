@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 
+@Suppress("unused")
 class ManagerRecyclerViewAdapter<T : Any>(private val adapters: Set<AnotherAdapter<*>> = emptySet()) : RecyclerView.Adapter<ManagerRecyclerViewAdapter.ViewHolder>(),
         ListUpdateCallback,
         ItemListUpdater<T> {
