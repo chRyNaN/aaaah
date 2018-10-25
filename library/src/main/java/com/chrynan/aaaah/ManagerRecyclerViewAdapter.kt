@@ -35,7 +35,7 @@ class ManagerRecyclerViewAdapter<T : Any>(private val adapters: Set<AnotherAdapt
 
     override fun onRemoved(position: Int, count: Int) = notifyItemRangeRemoved(position, count)
 
-    private fun getAdapterForItem(item: T) = adapters.firstOrNull { it.handlesItem(item) }
+    private fun getAdapterForItem(item: T) = adapters.firstOrNull { it.onHandlesItem(item) }
 
     private fun getAdapterForViewType(viewType: ViewType) = adapters.firstOrNull { it.viewType == viewType }
 

@@ -7,13 +7,13 @@ import android.view.ViewGroup
 
 inline fun <reified M : Any> anotherAdapter(viewType: ViewType,
                                             crossinline onCreateView: (parent: ViewGroup, viewType: ViewType) -> View,
-                                            crossinline onHandlesItem: (item: M) -> Boolean = { true },
+                                            crossinline onHandlesItem: (item: Any) -> Boolean,
                                             crossinline onBindItem: (view: View, item: M) -> Unit): AnotherAdapter<M> =
         object : AnotherAdapter<M>() {
 
             override val viewType = viewType
 
-            override fun onHandlesItem(item: M) = onHandlesItem(item)
+            override fun onHandlesItem(item: Any) = onHandlesItem(item)
 
             override fun onCreateView(parent: ViewGroup, viewType: ViewType) = onCreateView(parent, viewType)
 
