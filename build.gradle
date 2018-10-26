@@ -1,8 +1,12 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+group 'com.chrynan'
+version '0.1.9'
+
 buildscript {
     ext.kotlin_version = '1.2.71'
     repositories {
+        mavenCentral()
         google()
         jcenter()
     }
@@ -20,8 +24,4 @@ allprojects {
         google()
         jcenter()
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }
