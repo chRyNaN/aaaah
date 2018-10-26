@@ -30,7 +30,7 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                 processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "The ${Adapter::class.java.simpleName} Annotation must be applied to a Class.")
             }
 
-            if (!processingEnv.typeUtils.isAssignable(it.asType(), anotherAdapterType)) {
+            if (!processingEnv.typeUtils.isAssignable(anotherAdapterType, it.asType())) {
                 processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "The Class annotated with ${Adapter::class.java.simpleName} Annotation must implement $ANOTHER_ADAPTER_NAME abstract Class.")
             }
 
