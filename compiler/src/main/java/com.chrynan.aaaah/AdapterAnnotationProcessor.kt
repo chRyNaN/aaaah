@@ -22,16 +22,11 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
     }
 
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
-        val anotherAdapterType = processingEnv.elementUtils.getTypeElement(ANOTHER_ADAPTER_FULL_NAME).asType()
         val viewTypeNameMap = mutableMapOf<String, String>()
 
         roundEnv.getElementsAnnotatedWith(Adapter::class.java).forEach {
             if (it.kind != ElementKind.CLASS) {
                 processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "The ${Adapter::class.java.simpleName} Annotation must be applied to a Class.")
-            }
-
-            if (!processingEnv.typeUtils.isAssignable(anotherAdapterType, it.asType())) {
-                processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "The Class annotated with ${Adapter::class.java.simpleName} Annotation must implement $ANOTHER_ADAPTER_NAME abstract Class.")
             }
 
             val name = (it as TypeElement).getAnnotation(Adapter::class.java).name
