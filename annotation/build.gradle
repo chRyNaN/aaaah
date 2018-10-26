@@ -1,0 +1,13 @@
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+
+group 'com.chrynan'
+version '0.1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7"
+}

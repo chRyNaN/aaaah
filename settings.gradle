@@ -1,1 +1,3 @@
 include ':library'
+include ':annotation'
+include ':compiler'
