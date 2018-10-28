@@ -83,12 +83,12 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                 .addStatement("return AdapterViewTypes.viewTypes[clazz.java] ?: -1")
                 .build()
 
-        val file = FileSpec.builder(packageName = "", fileName = "AdapterViewTypes")
+        val file = FileSpec.builder(packageName = "com.chrynan.aaaah", fileName = "AdapterViewTypes")
                 .addType(typeSpec = typeSpecBuilder.build())
                 .addFunction(adapterFromFunction)
                 .build()
 
-        file.writeTo(File("${file.packageName}.${file.name}"))
+        file.writeTo(File(processingEnv.options["kapt.kotlin.generated"], "AdapterViewTypes"))
 
         return false
     }
