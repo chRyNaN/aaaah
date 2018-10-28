@@ -6,7 +6,7 @@ typealias ViewType = Int
 
 object AdapterViewType
 
-inline fun <reified T : Any> AdapterViewType.from(clazz: Class<T>): ViewType = clazz.hashCode()
+fun AdapterViewType.from(clazz: Class<*>): ViewType = clazz.hashCode()
 
 interface AdapterViewTypesProvider {
 

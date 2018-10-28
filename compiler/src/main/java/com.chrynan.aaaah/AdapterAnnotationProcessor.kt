@@ -42,7 +42,10 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
 
         val mapStringBuilder = StringBuilder()
 
-        val typeSpecBuilder = TypeSpec.objectBuilder("AdapterViewTypes")
+        val adapterViewTypeProviderType = ClassName(packageName = "com.chrynan.aaaah", simpleName = "AdapterViewTypesProvider")
+
+        val typeSpecBuilder = TypeSpec.objectBuilder(name = "AdapterViewTypes")
+                .addSuperinterface(superinterface = adapterViewTypeProviderType)
 
         var count = 0
         for (name in viewTypeNameMap.entries) {
@@ -61,11 +64,12 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
         val javaClassType = ClassName("java.lang", "Class")
         val anotherAdapterJavaClassType = javaClassType.parameterizedBy(wildCardAnotherAdapterType)
         val mapType = ClassName("kotlin.collections", "Map")
-        val mapOfAnotherAdapterType = mapType.parameterizedBy(anotherAdapterJavaClassType)
-        val adapterViewTypeType = ClassName("com.chrynan.aaaah", "AdapterViewType")
         val viewTypeType = ClassName("com.chrynan.aaaah", "ViewType")
+        val mapOfAnotherAdapterType = mapType.parameterizedBy(anotherAdapterJavaClassType, viewTypeType)
+        val adapterViewTypeType = ClassName("com.chrynan.aaaah", "AdapterViewType")
 
         typeSpecBuilder.addProperty(PropertySpec.builder(name = "viewTypes", type = mapOfAnotherAdapterType)
+                .addModifiers(KModifier.OVERRIDE)
                 .initializer(
                         """
                         mapOf(
