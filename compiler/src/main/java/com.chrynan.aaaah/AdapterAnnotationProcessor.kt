@@ -1,6 +1,9 @@
 package com.chrynan.aaaah
 
 import com.google.auto.service.AutoService
+import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import java.io.File
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
@@ -37,30 +40,54 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
             viewTypeNameMap["$packageName.$className"] = if (name.isBlank()) it.simpleName.toString().toConstantFieldName() else name
         }
 
-        val adapterViewTypesResultStringBuilder = StringBuilder()
-        val constantFieldsStringBuilder = StringBuilder()
         val mapStringBuilder = StringBuilder()
+
+        val typeSpecBuilder = TypeSpec.objectBuilder("AdapterViewTypes")
 
         var count = 0
         for (name in viewTypeNameMap.entries) {
-            constantFieldsStringBuilder.append("const val ${name.value} = $count")
             mapStringBuilder.append("${name.key}::class.java to $count")
+
+            typeSpecBuilder.addProperty(PropertySpec.builder(name = name.value, type = Int::class.java)
+                    .addModifiers(KModifier.CONST)
+                    .build())
+
             count += 1
         }
 
-        adapterViewTypesResultStringBuilder.append("import com.chrynan.aaaah.*\n\n")
-        adapterViewTypesResultStringBuilder.append("object AdapterViewTypes : AdapterViewTypesProvider {\n\n")
-        adapterViewTypesResultStringBuilder.append(constantFieldsStringBuilder)
-        adapterViewTypesResultStringBuilder.append("\n\n")
-        adapterViewTypesResultStringBuilder.append("val viewTypes: Map<Class<AnotherAdapter<*>>, ViewType> = mapOf(\n")
-        adapterViewTypesResultStringBuilder.append(mapStringBuilder)
-        adapterViewTypesResultStringBuilder.append(")\n")
-        adapterViewTypesResultStringBuilder.append("}\n\n")
-        adapterViewTypesResultStringBuilder.append("inline fun <reified T : Any> AdapterViewType.from(clazz: KClass<AnotherAdapter<*>>): ViewType = AdapterViewTypes.viewTypes[clazz.java] ?: -1\n")
+        val anotherAdapterType = ClassName("com.chrynan.aaaah", "AnotherAdapter")
+        val wildCardAnotherAdapterType = anotherAdapterType.parameterizedBy(WildcardTypeName.STAR)
+        val javaClassType = ClassName("java.lang", "Class")
+        val anotherAdapterJavaClassType = javaClassType.parameterizedBy(wildCardAnotherAdapterType)
+        val mapType = ClassName("kotlin.collections", "Map")
+        val mapOfAnotherAdapterType = mapType.parameterizedBy(anotherAdapterJavaClassType)
+        val adapterViewTypeType = ClassName("com.chrynan.aaaah", "AdapterViewType")
+        val kotlinClassType = ClassName("kotlin.reflect", "KClass")
+        val kotlinClassAnotherAdapterType = kotlinClassType.parameterizedBy(wildCardAnotherAdapterType)
+        val viewTypeType = ClassName("com.chrynan.aaaah", "ViewType")
 
-        val writer = processingEnv.filer.createSourceFile("com.chrynan.aaaah.AdapterViewTypes").openWriter()
-        writer.write(adapterViewTypesResultStringBuilder.toString())
-        writer.close()
+        typeSpecBuilder.addProperty(PropertySpec.builder(name = "viewTypes", type = mapOfAnotherAdapterType)
+                .initializer(
+                        """
+                        val viewTypes: Map<Class<AnotherAdapter<*>>, ViewType> = mapOf(
+                            $mapStringBuilder
+                        )
+                        """.trimIndent())
+                .build())
+
+        val adapterFromFunction = FunSpec.builder("from")
+                .returns(viewTypeType)
+                .receiver(adapterViewTypeType)
+                .addParameter(name = "clazz", type = kotlinClassAnotherAdapterType)
+                .addStatement("AdapterViewTypes.viewTypes[clazz.java] ?: -1")
+                .build()
+
+        val file = FileSpec.builder(packageName = "", fileName = "AdapterViewTypes")
+                .addType(typeSpec = typeSpecBuilder.build())
+                .addFunction(adapterFromFunction)
+                .build()
+
+        file.writeTo(File("$file.packageName.$file.name"))
 
         return false
     }
