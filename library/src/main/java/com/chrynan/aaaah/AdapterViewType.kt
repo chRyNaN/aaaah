@@ -12,5 +12,5 @@ inline fun <reified T : Any> AdapterViewType.from(clazz: KClass<T>): ViewType = 
 
 interface AdapterViewTypesProvider {
 
-    val viewTypes: Map<AnotherAdapter<*>, ViewType>
+    val viewTypes: Map<Class<AnotherAdapter<*>>, ViewType>
 }

@@ -34,7 +34,7 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
             val packageName = processingEnv.elementUtils.getPackageOf(it).toString()
             val className = it.simpleName
 
-            viewTypeNameMap[packageName + className] = if (name.isBlank()) it.simpleName.toString().toConstantFieldName() else name
+            viewTypeNameMap["$packageName.$className"] = if (name.isBlank()) it.simpleName.toString().toConstantFieldName() else name
         }
 
         val adapterViewTypesResultStringBuilder = StringBuilder()
@@ -44,20 +44,19 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
         var count = 0
         for (name in viewTypeNameMap.entries) {
             constantFieldsStringBuilder.append("const val ${name.value} = $count")
-            mapStringBuilder.append("${name.key} to $count")
+            mapStringBuilder.append("${name.key}::class.java to $count")
             count += 1
         }
 
-        adapterViewTypesResultStringBuilder.append("package com.chrynan.aaaah\n\n")
+        adapterViewTypesResultStringBuilder.append("import com.chrynan.aaaah.*\n\n")
         adapterViewTypesResultStringBuilder.append("object AdapterViewTypes : AdapterViewTypesProvider {\n\n")
-        adapterViewTypesResultStringBuilder.append("companion object {\n\n")
         adapterViewTypesResultStringBuilder.append(constantFieldsStringBuilder)
-        adapterViewTypesResultStringBuilder.append("}\n\n")
-        adapterViewTypesResultStringBuilder.append("val viewTypes: Map<AnotherAdapter<*>, ViewType> = mapOf(\n")
+        adapterViewTypesResultStringBuilder.append("\n\n")
+        adapterViewTypesResultStringBuilder.append("val viewTypes: Map<Class<AnotherAdapter<*>>, ViewType> = mapOf(\n")
         adapterViewTypesResultStringBuilder.append(mapStringBuilder)
         adapterViewTypesResultStringBuilder.append(")\n")
         adapterViewTypesResultStringBuilder.append("}\n\n")
-        adapterViewTypesResultStringBuilder.append("inline fun <reified T : Any> AdapterViewType.from(clazz: KClass<AnotherAdapter>): ViewType = AdapterViewTypes.viewTypes[clazz.qualifiedName] ?: -1")
+        adapterViewTypesResultStringBuilder.append("inline fun <reified T : Any> AdapterViewType.from(clazz: KClass<AnotherAdapter<*>>): ViewType = AdapterViewTypes.viewTypes[clazz.java] ?: -1\n")
 
         val writer = processingEnv.filer.createSourceFile("com.chrynan.aaaah.AdapterViewTypes").openWriter()
         writer.write(adapterViewTypesResultStringBuilder.toString())
@@ -71,7 +70,7 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
     override fun getSupportedAnnotationTypes() = mutableSetOf(Adapter::class.java.canonicalName)
 
     private fun String.toConstantFieldName(): String {
-        val nameStringBuilder = StringBuilder("AdapterViewTypes.")
+        val nameStringBuilder = StringBuilder()
 
         val chars = toCharArray()
 
