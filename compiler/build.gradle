@@ -3,7 +3,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'maven'
 
 group 'com.chrynan'
-version '0.1.16'
+version '0.1.17'
 
 repositories {
     mavenCentral()
