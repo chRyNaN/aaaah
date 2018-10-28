@@ -63,8 +63,6 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
         val mapType = ClassName("kotlin.collections", "Map")
         val mapOfAnotherAdapterType = mapType.parameterizedBy(anotherAdapterJavaClassType)
         val adapterViewTypeType = ClassName("com.chrynan.aaaah", "AdapterViewType")
-        val kotlinClassType = ClassName("kotlin.reflect", "KClass")
-        val kotlinClassAnotherAdapterType = kotlinClassType.parameterizedBy(wildCardAnotherAdapterType)
         val viewTypeType = ClassName("com.chrynan.aaaah", "ViewType")
 
         typeSpecBuilder.addProperty(PropertySpec.builder(name = "viewTypes", type = mapOfAnotherAdapterType)
@@ -79,8 +77,8 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
         val adapterFromFunction = FunSpec.builder("from")
                 .returns(viewTypeType)
                 .receiver(adapterViewTypeType)
-                .addParameter(name = "clazz", type = kotlinClassAnotherAdapterType)
-                .addStatement("return AdapterViewTypes.viewTypes[clazz.java] ?: -1")
+                .addParameter(name = "clazz", type = anotherAdapterJavaClassType)
+                .addStatement("return AdapterViewTypes.viewTypes[clazz] ?: -1")
                 .build()
 
         val file = FileSpec.builder(packageName = "com.chrynan.aaaah", fileName = "AdapterViewTypes")
