@@ -50,6 +50,7 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
 
             typeSpecBuilder.addProperty(PropertySpec.builder(name = name.value, type = Int::class.java)
                     .addModifiers(KModifier.CONST)
+                    .initializer("$count")
                     .build())
 
             count += 1
@@ -69,7 +70,7 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
         typeSpecBuilder.addProperty(PropertySpec.builder(name = "viewTypes", type = mapOfAnotherAdapterType)
                 .initializer(
                         """
-                        val viewTypes: Map<Class<AnotherAdapter<*>>, ViewType> = mapOf(
+                        mapOf(
                             $mapStringBuilder
                         )
                         """.trimIndent())
@@ -79,7 +80,7 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                 .returns(viewTypeType)
                 .receiver(adapterViewTypeType)
                 .addParameter(name = "clazz", type = kotlinClassAnotherAdapterType)
-                .addStatement("AdapterViewTypes.viewTypes[clazz.java] ?: -1")
+                .addStatement("return AdapterViewTypes.viewTypes[clazz.java] ?: -1")
                 .build()
 
         val file = FileSpec.builder(packageName = "", fileName = "AdapterViewTypes")
@@ -87,7 +88,7 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                 .addFunction(adapterFromFunction)
                 .build()
 
-        file.writeTo(File("$file.packageName.$file.name"))
+        file.writeTo(File("${file.packageName}.${file.name}"))
 
         return false
     }
