@@ -33,7 +33,7 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
     private val anotherAdapterClassName: ClassName by lazy { ClassName.get("com.chrynan.aaaah", "AnotherAdapter") }
     private val genericAnotherAdapterClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(anotherAdapterClassName, WildcardTypeName.subtypeOf(java.lang.Object::class.java)) }
     private val javaClassName: ClassName by lazy { ClassName.get("java.lang", "Class") }
-    private val anotherAdapterGenericJavaClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(javaClassName, genericAnotherAdapterClassName) }
+    private val anotherAdapterGenericJavaClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(javaClassName, WildcardTypeName.subtypeOf(genericAnotherAdapterClassName)) }
     private val mapClassName: ClassName by lazy { ClassName.get(java.util.Map::class.java) }
     private val integerClassName: ClassName by lazy { ClassName.get(java.lang.Integer::class.java) }
     private val viewTypesMapClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(mapClassName, anotherAdapterGenericJavaClassName, integerClassName) }

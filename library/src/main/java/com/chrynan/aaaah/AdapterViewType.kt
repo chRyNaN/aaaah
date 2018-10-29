@@ -10,5 +10,5 @@ fun AdapterViewType.from(clazz: Class<*>): ViewType = clazz.hashCode()
 
 interface AdapterViewTypesProvider {
 
-    val viewTypes: Map<Class<AnotherAdapter<*>>, ViewType>
+    val viewTypes: Map<Class<out AnotherAdapter<*>>, ViewType>
 }
