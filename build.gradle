@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 group 'com.chrynan'
-version '0.1.26'
+version '0.1.27'
 
 buildscript {
     ext.kotlin_version = '1.2.71'
