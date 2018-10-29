@@ -121,11 +121,14 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                         .addMethod(
                                 MethodSpec.methodBuilder("from")
-                                        .returns(integerClassName)
+                                        .returns(TypeName.INT)
                                         .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                                        .addAnnotation(NotNull::class.java)
-                                        .addParameter(adapterViewTypeSingularClassName, "adapterViewType")
-                                        .addParameter(anotherAdapterGenericJavaClassName, "clazz")
+                                        .addParameter(ParameterSpec.builder(adapterViewTypeSingularClassName, "\$receiver")
+                                                .addAnnotation(NotNull::class.java)
+                                                .build())
+                                        .addParameter(ParameterSpec.builder(anotherAdapterGenericJavaClassName, "clazz")
+                                                .addAnnotation(NotNull::class.java)
+                                                .build())
                                         .addCode("" +
                                                 "Integer viewType = AdapterViewTypes.getInstance().getViewTypes().get(clazz);\n" +
                                                 "if (viewType == null) {\n" +
