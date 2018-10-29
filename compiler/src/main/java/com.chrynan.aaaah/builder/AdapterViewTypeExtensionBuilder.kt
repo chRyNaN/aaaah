@@ -6,7 +6,7 @@ import com.squareup.javapoet.*
 import org.jetbrains.annotations.NotNull
 import javax.lang.model.element.Modifier
 
-class AdapterViewTypeExtensionBuilder : Builder {
+class AdapterViewTypeExtensionBuilder : JavaTypeSpecBuilder {
 
     private val anotherAdapterClassName: ClassName by lazy { ClassName.get(Packages.AAAAH, Names.ANOTHER_ADAPTER) }
     private val genericAnotherAdapterClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(anotherAdapterClassName, WildcardTypeName.subtypeOf(java.lang.Object::class.java)) }

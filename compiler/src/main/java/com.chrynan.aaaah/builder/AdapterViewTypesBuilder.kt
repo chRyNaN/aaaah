@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull
 import java.util.*
 import javax.lang.model.element.Modifier
 
-class AdapterViewTypesBuilder(private val annotatedClasses: List<AdapterAnnotatedClass>) : Builder {
+class AdapterViewTypesBuilder(private val annotatedClasses: List<AdapterAnnotatedClass>) : JavaTypeSpecBuilder {
 
     private val adapterViewTypeProviderClassName: ClassName by lazy { ClassName.get(Packages.AAAAH, Names.ADAPTER_VIEW_TYPES_PROVIDER) }
     private val anotherAdapterClassName: ClassName by lazy { ClassName.get(Packages.AAAAH, Names.ANOTHER_ADAPTER) }
