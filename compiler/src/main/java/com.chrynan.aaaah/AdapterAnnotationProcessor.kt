@@ -2,6 +2,7 @@ package com.chrynan.aaaah
 
 import com.google.auto.service.AutoService
 import com.squareup.javapoet.*
+import java.util.*
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
@@ -36,7 +37,8 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
     private val viewTypesMapClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(mapClassName, anotherAdapterGenericJavaClassName, integerClassName) }
     private val adapterViewTypeSingularClassName: ClassName by lazy { ClassName.get("com.chrynan.aaaah", "AdapterViewType") }
     private val adapterViewTypesPluralClassName: ClassName by lazy { ClassName.get("com.chrynan.aaaah", "AdapterViewTypes") }
-
+    private val hashMapClassName: ClassName by lazy { ClassName.get(HashMap::class.java) }
+    private val viewTypesHashMapClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(hashMapClassName, anotherAdapterGenericJavaClassName, integerClassName) }
 
     // TODO Try creating a Java File as output because support for Kotlin Output sucks with Kapt
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
@@ -64,12 +66,12 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                         .build())
                 .addField(FieldSpec.builder(viewTypesMapClassName, "map")
                         .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                        .initializer("new HashMap<Class<AnotherAdapter<?>>, Integer>()")
+                        .initializer("new \$T", viewTypesHashMapClassName)
                         .build())
                 .addMethod(MethodSpec.methodBuilder("getInstance")
                         .returns(adapterViewTypesPluralClassName)
                         .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                        .addCode("return singleton")
+                        .addCode("return singleton;")
                         .build())
 
         val constructorBuilder = MethodSpec.constructorBuilder()
@@ -91,10 +93,10 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                 .returns(viewTypesMapClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override::class.java)
-                .addCode("return map")
+                .addCode("return map;")
                 .build())
 
-        val adapterViewTypeSingularTypeSpecBuilder = TypeSpec.classBuilder("AdapterViewTypeKt")
+        val adapterViewTypeSingularTypeSpecBuilder = TypeSpec.classBuilder("AdapterViewTypeExtensionKt")
                 .addMethod(
                         MethodSpec.methodBuilder("from")
                                 .returns(integerClassName)
