@@ -1,7 +1,7 @@
 package com.chrynan.aaaah
 
-import com.chrynan.aaaah.builder.JavaAdapterViewTypeExtensionBuilder
 import com.chrynan.aaaah.builder.AdapterViewTypesBuilder
+import com.chrynan.aaaah.builder.KotlinAdapterViewTypeExtensionBuilder
 import com.chrynan.aaaah.utils.classExists
 import com.chrynan.aaaah.utils.createJavaFile
 import com.chrynan.aaaah.utils.getAdapterAnnotatedClasses
@@ -30,13 +30,12 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
 
             if (annotatedClasses.isNotEmpty()) {
                 val adapterViewTypesTypeSpec = AdapterViewTypesBuilder(annotatedClasses = annotatedClasses).build()
-                val adapterViewTypeExtensionTypeSpec = JavaAdapterViewTypeExtensionBuilder().build()
+                val adapterViewTypeExtensionTypeSpec = KotlinAdapterViewTypeExtensionBuilder().build()
 
                 val adapterViewTypesFile = JavaFile.builder(Packages.AAAAH, adapterViewTypesTypeSpec).build()
-                val adapterViewTypeExtensionFile = JavaFile.builder(Packages.AAAAH, adapterViewTypeExtensionTypeSpec).build()
 
                 filer.createJavaFile(file = adapterViewTypesFile, fileName = FullNames.ADAPTER_VIEW_TYPES, messager = messager)
-                filer.createJavaFile(file = adapterViewTypeExtensionFile, fileName = FullNames.ADAPTER_VIEW_TYPE, messager = messager)
+                KotlinFileWriter.write(fileSpec = adapterViewTypeExtensionTypeSpec, processingEnv = processingEnv, fullClassName = Names.ADAPTER_VIEW_TYPE_EXTENSION)
             }
         }
 

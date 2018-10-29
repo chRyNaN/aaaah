@@ -12,7 +12,7 @@ import javax.tools.Diagnostic
 fun RoundEnvironment.getAdapterAnnotatedClasses(elementUtils: Elements, messager: Messager) =
         getElementsAnnotatedWith(Adapter::class.java).map {
             if (it.kind != ElementKind.CLASS) {
-                messager.printMessage(Diagnostic.Kind.ERROR, "The ${Adapter::class.java.simpleName} Annotation must be applied to a Class.")
+                messager.printMessage(Diagnostic.Kind.ERROR, "The ${Adapter::class.java.simpleName} Annotation must be applied to a JAVA_CLASS.")
             }
 
             AdapterAnnotatedClass(

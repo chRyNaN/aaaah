@@ -6,6 +6,8 @@ import com.squareup.javapoet.*
 import org.jetbrains.annotations.NotNull
 import javax.lang.model.element.Modifier
 
+@Suppress("unused")
+@Deprecated(message = "Use KotlinAdapterViewTypeExtensionBuilder Instead.")
 class JavaAdapterViewTypeExtensionBuilder : JavaTypeSpecBuilder {
 
     private val anotherAdapterClassName: ClassName by lazy { ClassName.get(Packages.AAAAH, Names.ANOTHER_ADAPTER) }
