@@ -66,12 +66,12 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                         .build())
                 .addField(FieldSpec.builder(viewTypesMapClassName, "map")
                         .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                        .initializer("new \$T", viewTypesHashMapClassName)
+                        .initializer("new \$T()", viewTypesHashMapClassName)
                         .build())
                 .addMethod(MethodSpec.methodBuilder("getInstance")
                         .returns(adapterViewTypesPluralClassName)
                         .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                        .addCode("return singleton;")
+                        .addCode("return singleton;\n")
                         .build())
 
         val constructorBuilder = MethodSpec.constructorBuilder()
@@ -93,10 +93,11 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                 .returns(viewTypesMapClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override::class.java)
-                .addCode("return map;")
+                .addCode("return map;\n")
                 .build())
 
         val adapterViewTypeSingularTypeSpecBuilder = TypeSpec.classBuilder("AdapterViewTypeExtensionKt")
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addMethod(
                         MethodSpec.methodBuilder("from")
                                 .returns(integerClassName)
@@ -104,8 +105,12 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                                 .addParameter(adapterViewTypeSingularClassName, "adapterViewType")
                                 .addParameter(anotherAdapterGenericJavaClassName, "clazz")
                                 .addCode("" +
-                                        "Int viewType = AdapterViewTypes.getInstance().getViewTypes().get(clazz);" +
-                                        "if (viewType == null) return -1 else return viewType;"
+                                        "Integer viewType = AdapterViewTypes.getInstance().getViewTypes().get(clazz);\n" +
+                                        "if (viewType == null) {" +
+                                        "    return -1;" +
+                                        "} else { " +
+                                        "    return viewType;" +
+                                        "}"
                                 )
                                 .build())
 
