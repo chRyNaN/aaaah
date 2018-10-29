@@ -3,14 +3,12 @@ package com.chrynan.aaaah
 import com.google.auto.service.AutoService
 import com.squareup.javapoet.*
 import java.util.*
-import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.Processor
-import javax.annotation.processing.RoundEnvironment
-import javax.annotation.processing.SupportedOptions
+import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
+import javax.lang.model.util.Elements
 import javax.tools.Diagnostic
 
 typealias ClassFullName = String
@@ -27,6 +25,10 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
         private const val ANOTHER_ADAPTER_FULL_NAME = "com.chrynan.aaaah.AnotherAdapter"
     }
 
+    private val filer: Filer by lazy { processingEnv.filer }
+    private val messager: Messager by lazy { processingEnv.messager }
+    private val elementUtils: Elements by lazy { processingEnv.elementUtils }
+
     private val adapterViewTypeProviderClassName: ClassName by lazy { ClassName.get("com.chrynan.aaaah", "AdapterViewTypesProvider") }
     private val anotherAdapterClassName: ClassName by lazy { ClassName.get("com.chrynan.aaaah", "AnotherAdapter") }
     private val genericAnotherAdapterClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(anotherAdapterClassName, WildcardTypeName.subtypeOf(java.lang.Object::class.java)) }
@@ -40,18 +42,17 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
     private val hashMapClassName: ClassName by lazy { ClassName.get(HashMap::class.java) }
     private val viewTypesHashMapClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(hashMapClassName, anotherAdapterGenericJavaClassName, integerClassName) }
 
-    // TODO Try creating a Java File as output because support for Kotlin Output sucks with Kapt
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
         val viewTypeNameMap = mutableMapOf<ClassFullName, FieldName>()
 
         roundEnv.getElementsAnnotatedWith(Adapter::class.java).forEach {
             if (it.kind != ElementKind.CLASS) {
-                processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "The ${Adapter::class.java.simpleName} Annotation must be applied to a Class.")
+                messager.printMessage(Diagnostic.Kind.ERROR, "The ${Adapter::class.java.simpleName} Annotation must be applied to a Class.")
             }
 
             val providedName = (it as TypeElement).getAnnotation(Adapter::class.java).name
 
-            val packageName = processingEnv.elementUtils.getPackageOf(it).toString()
+            val packageName = elementUtils.getPackageOf(it).toString()
             val className = it.simpleName.toString()
 
             viewTypeNameMap["$packageName.$className"] = if (providedName.isBlank()) className.toConstantFieldName() else providedName
@@ -79,7 +80,7 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
 
         var count = 0
         for (name in viewTypeNameMap.entries) {
-            constructorBuilder.addStatement("map.put($name.key, $count)")
+            constructorBuilder.addStatement("map.put(${name.key}.class, $count)")
 
             adapterViewTypesSpecBuilder.addField(FieldSpec.builder(integerClassName, name.value)
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
@@ -119,8 +120,21 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
         val adapterViewTypesFile = JavaFile.builder("com.chrynan.aaaah", adapterViewTypesSpecBuilder.build()).build()
         val adapterViewTypeSingularFile = JavaFile.builder("com.chrynan.aaaah", adapterViewTypeSingularTypeSpecBuilder.build()).build()
 
-        adapterViewTypesFile.writeTo(processingEnv.filer)
-        adapterViewTypeSingularFile.writeTo(processingEnv.filer)
+        try {
+            adapterViewTypesFile.writeTo(filer)
+        } catch (e: Exception) {
+            messager.printMessage(Diagnostic.Kind.ERROR, "Error creating AdapterViewTypes class.\n" +
+                    "LocalizedMessage = ${e.localizedMessage}\n" +
+                    "Exception = $e")
+        }
+
+        try {
+            adapterViewTypeSingularFile.writeTo(filer)
+        } catch (e: Exception) {
+            messager.printMessage(Diagnostic.Kind.ERROR, "Error creating AdapterViewTypeExtensionKt class.\n" +
+                    "LocalizedMessage = ${e.localizedMessage}\n" +
+                    "Exception = $e")
+        }
 
         return false
     }
@@ -128,22 +142,4 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latestSupported()
 
     override fun getSupportedAnnotationTypes() = mutableSetOf(Adapter::class.java.canonicalName)
-
-    private fun String.toConstantFieldName(): String {
-        val nameStringBuilder = StringBuilder()
-
-        val chars = toCharArray()
-
-        for (i in 0 until chars.size) {
-            val char = chars[i]
-
-            if (Character.isUpperCase(char) && i != 0) {
-                nameStringBuilder.append("_$char")
-            } else {
-                nameStringBuilder.append(Character.toUpperCase(char))
-            }
-        }
-
-        return nameStringBuilder.toString()
-    }
 }
