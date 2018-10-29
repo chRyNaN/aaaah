@@ -35,7 +35,7 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                 val adapterViewTypesFile = JavaFile.builder(Packages.AAAAH, adapterViewTypesTypeSpec).build()
 
                 filer.createJavaFile(file = adapterViewTypesFile, fileName = FullNames.ADAPTER_VIEW_TYPES, messager = messager)
-                KotlinFileWriter.write(fileSpec = adapterViewTypeExtensionTypeSpec, processingEnv = processingEnv, fullClassName = Names.ADAPTER_VIEW_TYPE_EXTENSION)
+                KotlinFileWriter.write(fileSpec = adapterViewTypeExtensionTypeSpec, processingEnv = processingEnv)
             }
         }
 
