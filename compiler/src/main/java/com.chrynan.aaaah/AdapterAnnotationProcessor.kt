@@ -2,6 +2,7 @@ package com.chrynan.aaaah
 
 import com.google.auto.service.AutoService
 import com.squareup.javapoet.*
+import org.jetbrains.annotations.NotNull
 import java.util.*
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
@@ -23,6 +24,8 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
 
         private const val ANOTHER_ADAPTER_NAME = "AnotherAdapter"
         private const val ANOTHER_ADAPTER_FULL_NAME = "com.chrynan.aaaah.AnotherAdapter"
+        private const val ADAPTER_VIEW_TYPES_FULL_NAME = "com.chrynan.aaaah.AdapterViewTypes"
+        private const val ADAPTER_VIEW_TYPE_EXTENSION_FULL_NAME = "com.chrynan.aaaah.AdapterViewTypeExtensionKt"
     }
 
     private val filer: Filer by lazy { processingEnv.filer }
@@ -44,96 +47,114 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
 
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
         val viewTypeNameMap = mutableMapOf<ClassFullName, FieldName>()
+        val adapterViewTypesAlreadyCreated = classExists(fullName = "$ADAPTER_VIEW_TYPES_FULL_NAME") {
+            messager.printMessage(Diagnostic.Kind.WARNING, "Class with name $ADAPTER_VIEW_TYPES_FULL_NAME already exists. " +
+                    "Either it was already created by the Annotation Processor or it exists in the Source Code." +
+                    "Not going to attempt to create another file.")
+        }
+        val adapterViewTypeExtensionKtAlreadyCreated = classExists(fullName = "$ADAPTER_VIEW_TYPE_EXTENSION_FULL_NAME") {
+            messager.printMessage(Diagnostic.Kind.WARNING, "Class with name $ADAPTER_VIEW_TYPE_EXTENSION_FULL_NAME already exists. " +
+                    "Either it was already created by the Annotation Processor or it exists in the Source Code." +
+                    "Not going to attempt to create another file.")
+        }
 
-        roundEnv.getElementsAnnotatedWith(Adapter::class.java).forEach {
-            if (it.kind != ElementKind.CLASS) {
-                messager.printMessage(Diagnostic.Kind.ERROR, "The ${Adapter::class.java.simpleName} Annotation must be applied to a Class.")
+        if (!adapterViewTypesAlreadyCreated and !adapterViewTypeExtensionKtAlreadyCreated) {
+            roundEnv.getElementsAnnotatedWith(Adapter::class.java).forEach {
+                if (it.kind != ElementKind.CLASS) {
+                    messager.printMessage(Diagnostic.Kind.ERROR, "The ${Adapter::class.java.simpleName} Annotation must be applied to a Class.")
+                }
+
+                val providedName = (it as TypeElement).getAnnotation(Adapter::class.java).name
+
+                val packageName = elementUtils.getPackageOf(it).toString()
+                val className = it.simpleName.toString()
+
+                viewTypeNameMap["$packageName.$className"] = if (providedName.isBlank()) className.toConstantFieldName() else providedName
             }
 
-            val providedName = (it as TypeElement).getAnnotation(Adapter::class.java).name
-
-            val packageName = elementUtils.getPackageOf(it).toString()
-            val className = it.simpleName.toString()
-
-            viewTypeNameMap["$packageName.$className"] = if (providedName.isBlank()) className.toConstantFieldName() else providedName
-        }
-
-        val adapterViewTypesSpecBuilder = TypeSpec.classBuilder("AdapterViewTypes")
-                .addSuperinterface(adapterViewTypeProviderClassName)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addField(FieldSpec.builder(adapterViewTypesPluralClassName, "singleton")
-                        .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                        .initializer("new AdapterViewTypes()")
-                        .build())
-                .addField(FieldSpec.builder(viewTypesMapClassName, "map")
-                        .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                        .initializer("new \$T()", viewTypesHashMapClassName)
-                        .build())
-                .addMethod(MethodSpec.methodBuilder("getInstance")
-                        .returns(adapterViewTypesPluralClassName)
-                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                        .addCode("return singleton;\n")
-                        .build())
-
-        val constructorBuilder = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PRIVATE)
-
-        var count = 0
-        for (name in viewTypeNameMap.entries) {
-            constructorBuilder.addStatement("map.put(${name.key}.class, $count)")
-
-            adapterViewTypesSpecBuilder.addField(FieldSpec.builder(integerClassName, name.value)
-                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                    .initializer("$count")
-                    .build())
-
-            count += 1
-        }
-
-        adapterViewTypesSpecBuilder.addMethod(constructorBuilder.build())
-
-        adapterViewTypesSpecBuilder.addMethod(MethodSpec.methodBuilder("getViewTypes")
-                .returns(viewTypesMapClassName)
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(Override::class.java)
-                .addCode("return map;\n")
-                .build())
-
-        val adapterViewTypeSingularTypeSpecBuilder = TypeSpec.classBuilder("AdapterViewTypeExtensionKt")
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addMethod(
-                        MethodSpec.methodBuilder("from")
-                                .returns(integerClassName)
+            if (viewTypeNameMap.isNotEmpty()) {
+                val adapterViewTypesSpecBuilder = TypeSpec.classBuilder("AdapterViewTypes")
+                        .addSuperinterface(adapterViewTypeProviderClassName)
+                        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                        .addField(FieldSpec.builder(adapterViewTypesPluralClassName, "singleton")
+                                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                                .initializer("new AdapterViewTypes()")
+                                .build())
+                        .addField(FieldSpec.builder(viewTypesMapClassName, "map")
+                                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                                .initializer("new \$T()", viewTypesHashMapClassName)
+                                .build())
+                        .addMethod(MethodSpec.methodBuilder("getInstance")
+                                .returns(adapterViewTypesPluralClassName)
+                                .addAnnotation(NotNull::class.java)
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                                .addParameter(adapterViewTypeSingularClassName, "adapterViewType")
-                                .addParameter(anotherAdapterGenericJavaClassName, "clazz")
-                                .addCode("" +
-                                        "Integer viewType = AdapterViewTypes.getInstance().getViewTypes().get(clazz);\n" +
-                                        "if (viewType == null) {\n" +
-                                        "    return -1;\n" +
-                                        "} else {\n" +
-                                        "    return viewType;\n" +
-                                        "}"
-                                )
+                                .addCode("return singleton;\n")
                                 .build())
 
-        val adapterViewTypesFile = JavaFile.builder("com.chrynan.aaaah", adapterViewTypesSpecBuilder.build()).build()
-        val adapterViewTypeSingularFile = JavaFile.builder("com.chrynan.aaaah", adapterViewTypeSingularTypeSpecBuilder.build()).build()
+                val constructorBuilder = MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PRIVATE)
 
-        try {
-            adapterViewTypesFile.writeTo(filer)
-        } catch (e: Exception) {
-            messager.printMessage(Diagnostic.Kind.ERROR, "Error creating AdapterViewTypes class.\n" +
-                    "LocalizedMessage = ${e.localizedMessage}\n" +
-                    "Exception = $e")
-        }
+                var count = 0
+                for (name in viewTypeNameMap.entries) {
+                    constructorBuilder.addStatement("map.put(${name.key}.class, $count)")
 
-        try {
-            adapterViewTypeSingularFile.writeTo(filer)
-        } catch (e: Exception) {
-            messager.printMessage(Diagnostic.Kind.ERROR, "Error creating AdapterViewTypeExtensionKt class.\n" +
-                    "LocalizedMessage = ${e.localizedMessage}\n" +
-                    "Exception = $e")
+                    adapterViewTypesSpecBuilder.addField(FieldSpec.builder(integerClassName, name.value)
+                            .addAnnotation(NotNull::class.java)
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                            .initializer("$count")
+                            .build())
+
+                    count += 1
+                }
+
+                adapterViewTypesSpecBuilder.addMethod(constructorBuilder.build())
+
+                adapterViewTypesSpecBuilder.addMethod(MethodSpec.methodBuilder("getViewTypes")
+                        .returns(viewTypesMapClassName)
+                        .addAnnotation(NotNull::class.java)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addAnnotation(Override::class.java)
+                        .addCode("return map;\n")
+                        .build())
+
+                val adapterViewTypeSingularTypeSpecBuilder = TypeSpec.classBuilder("AdapterViewTypeExtensionKt")
+                        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                        .addMethod(
+                                MethodSpec.methodBuilder("from")
+                                        .returns(integerClassName)
+                                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                        .addAnnotation(NotNull::class.java)
+                                        .addParameter(adapterViewTypeSingularClassName, "adapterViewType")
+                                        .addParameter(anotherAdapterGenericJavaClassName, "clazz")
+                                        .addCode("" +
+                                                "Integer viewType = AdapterViewTypes.getInstance().getViewTypes().get(clazz);\n" +
+                                                "if (viewType == null) {\n" +
+                                                "    return -1;\n" +
+                                                "} else {\n" +
+                                                "    return viewType;\n" +
+                                                "}"
+                                        )
+                                        .build())
+
+                val adapterViewTypesFile = JavaFile.builder("com.chrynan.aaaah", adapterViewTypesSpecBuilder.build()).build()
+                val adapterViewTypeSingularFile = JavaFile.builder("com.chrynan.aaaah", adapterViewTypeSingularTypeSpecBuilder.build()).build()
+
+                try {
+                    adapterViewTypesFile.writeTo(filer)
+                } catch (e: Exception) {
+                    messager.printMessage(Diagnostic.Kind.ERROR, "Error creating AdapterViewTypes class.\n" +
+                            "LocalizedMessage = ${e.localizedMessage}\n" +
+                            "Exception = $e")
+                }
+
+                try {
+                    adapterViewTypeSingularFile.writeTo(filer)
+                } catch (e: Exception) {
+                    messager.printMessage(Diagnostic.Kind.ERROR, "Error creating AdapterViewTypeExtensionKt class.\n" +
+                            "LocalizedMessage = ${e.localizedMessage}\n" +
+                            "Exception = $e")
+                }
+            }
         }
 
         return false
