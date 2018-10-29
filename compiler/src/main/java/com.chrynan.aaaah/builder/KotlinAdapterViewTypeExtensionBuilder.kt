@@ -21,7 +21,7 @@ class KotlinAdapterViewTypeExtensionBuilder : KotlinFileSpecBuilder {
                             .receiver(adapterViewTypeSingularClassName)
                             .returns(viewTypeClassName)
                             .addParameter(name = "clazz", type = anotherAdapterGenericJavaClassName)
-                            .addStatement("return %T.viewTypes[clazz] ?: -1", adapterViewTypesClassName)
+                            .addStatement("return %T.getInstance().viewTypes[clazz] ?: -1", adapterViewTypesClassName)
                             .build())
                     .build()
 }
