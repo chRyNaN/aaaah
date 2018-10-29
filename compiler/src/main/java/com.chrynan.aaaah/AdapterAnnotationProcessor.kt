@@ -1,17 +1,19 @@
 package com.chrynan.aaaah
 
 import com.google.auto.service.AutoService
-import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import java.io.File
+import com.squareup.javapoet.*
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedOptions
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.ElementKind
+import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
+
+typealias ClassFullName = String
+typealias FieldName = String
 
 @Suppress("unused")
 @AutoService(Processor::class)
@@ -24,73 +26,92 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
         private const val ANOTHER_ADAPTER_FULL_NAME = "com.chrynan.aaaah.AnotherAdapter"
     }
 
+    private val adapterViewTypeProviderClassName: ClassName by lazy { ClassName.get("com.chrynan.aaaah", "AdapterViewTypesProvider") }
+    private val anotherAdapterClassName: ClassName by lazy { ClassName.get("com.chrynan.aaaah", "AnotherAdapter") }
+    private val genericAnotherAdapterClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(anotherAdapterClassName, WildcardTypeName.subtypeOf(java.lang.Object::class.java)) }
+    private val javaClassName: ClassName by lazy { ClassName.get("java.lang", "Class") }
+    private val anotherAdapterGenericJavaClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(javaClassName, genericAnotherAdapterClassName) }
+    private val mapClassName: ClassName by lazy { ClassName.get(java.util.Map::class.java) }
+    private val integerClassName: ClassName by lazy { ClassName.get(java.lang.Integer::class.java) }
+    private val viewTypesMapClassName: ParameterizedTypeName by lazy { ParameterizedTypeName.get(mapClassName, anotherAdapterGenericJavaClassName, integerClassName) }
+    private val adapterViewTypeSingularClassName: ClassName by lazy { ClassName.get("com.chrynan.aaaah", "AdapterViewType") }
+    private val adapterViewTypesPluralClassName: ClassName by lazy { ClassName.get("com.chrynan.aaaah", "AdapterViewTypes") }
+
+
+    // TODO Try creating a Java File as output because support for Kotlin Output sucks with Kapt
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
-        val viewTypeNameMap = mutableMapOf<String, String>()
+        val viewTypeNameMap = mutableMapOf<ClassFullName, FieldName>()
 
         roundEnv.getElementsAnnotatedWith(Adapter::class.java).forEach {
             if (it.kind != ElementKind.CLASS) {
                 processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "The ${Adapter::class.java.simpleName} Annotation must be applied to a Class.")
             }
 
-            val name = (it as TypeElement).getAnnotation(Adapter::class.java).name
+            val providedName = (it as TypeElement).getAnnotation(Adapter::class.java).name
 
             val packageName = processingEnv.elementUtils.getPackageOf(it).toString()
-            val className = it.simpleName
+            val className = it.simpleName.toString()
 
-            viewTypeNameMap["$packageName.$className"] = if (name.isBlank()) it.simpleName.toString().toConstantFieldName() else name
+            viewTypeNameMap["$packageName.$className"] = if (providedName.isBlank()) className.toConstantFieldName() else providedName
         }
 
-        val mapStringBuilder = StringBuilder()
+        val adapterViewTypesSpecBuilder = TypeSpec.classBuilder("AdapterViewTypes")
+                .addSuperinterface(adapterViewTypeProviderClassName)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addField(FieldSpec.builder(adapterViewTypesPluralClassName, "singleton")
+                        .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                        .initializer("new AdapterViewTypes()")
+                        .build())
+                .addField(FieldSpec.builder(viewTypesMapClassName, "map")
+                        .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                        .initializer("new HashMap<Class<AnotherAdapter<?>>, Integer>()")
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("getInstance")
+                        .returns(adapterViewTypesPluralClassName)
+                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                        .addCode("return singleton")
+                        .build())
 
-        val adapterViewTypeProviderType = ClassName(packageName = "com.chrynan.aaaah", simpleName = "AdapterViewTypesProvider")
-
-        val typeSpecBuilder = TypeSpec.objectBuilder(name = "AdapterViewTypes")
-                .addSuperinterface(superinterface = adapterViewTypeProviderType)
+        val constructorBuilder = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PRIVATE)
 
         var count = 0
         for (name in viewTypeNameMap.entries) {
-            mapStringBuilder.append("${name.key}::class.java to $count")
+            constructorBuilder.addStatement("map.put($name.key, $count)")
 
-            typeSpecBuilder.addProperty(PropertySpec.builder(name = name.value, type = Int::class.java)
-                    .addModifiers(KModifier.CONST)
+            adapterViewTypesSpecBuilder.addField(FieldSpec.builder(integerClassName, name.value)
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                     .initializer("$count")
                     .build())
 
             count += 1
         }
 
-        val anotherAdapterType = ClassName("com.chrynan.aaaah", "AnotherAdapter")
-        val wildCardAnotherAdapterType = anotherAdapterType.parameterizedBy(WildcardTypeName.STAR)
-        val javaClassType = ClassName("java.lang", "Class")
-        val anotherAdapterJavaClassType = javaClassType.parameterizedBy(wildCardAnotherAdapterType)
-        val mapType = ClassName("kotlin.collections", "Map")
-        val viewTypeType = ClassName("com.chrynan.aaaah", "ViewType")
-        val mapOfAnotherAdapterType = mapType.parameterizedBy(anotherAdapterJavaClassType, viewTypeType)
-        val adapterViewTypeType = ClassName("com.chrynan.aaaah", "AdapterViewType")
-
-        typeSpecBuilder.addProperty(PropertySpec.builder(name = "viewTypes", type = mapOfAnotherAdapterType)
-                .addModifiers(KModifier.OVERRIDE)
-                .initializer(
-                        """
-                        mapOf(
-                            $mapStringBuilder
-                        )
-                        """.trimIndent())
+        adapterViewTypesSpecBuilder.addMethod(MethodSpec.methodBuilder("getViewTypes")
+                .returns(viewTypesMapClassName)
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override::class.java)
+                .addCode("return map")
                 .build())
 
-        val adapterFromFunction = FunSpec.builder("from")
-                .returns(viewTypeType)
-                .receiver(adapterViewTypeType)
-                .addParameter(name = "clazz", type = anotherAdapterJavaClassType)
-                .addStatement("return AdapterViewTypes.viewTypes[clazz] ?: -1")
-                .build()
+        val adapterViewTypeSingularTypeSpecBuilder = TypeSpec.classBuilder("AdapterViewTypeKt")
+                .addMethod(
+                        MethodSpec.methodBuilder("from")
+                                .returns(integerClassName)
+                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                .addParameter(adapterViewTypeSingularClassName, "adapterViewType")
+                                .addParameter(anotherAdapterGenericJavaClassName, "clazz")
+                                .addCode("" +
+                                        "Int viewType = AdapterViewTypes.getInstance().getViewTypes().get(clazz);" +
+                                        "if (viewType == null) return -1 else return viewType;"
+                                )
+                                .build())
 
-        val file = FileSpec.builder(packageName = "com.chrynan.aaaah", fileName = "AdapterViewTypes")
-                .addType(typeSpec = typeSpecBuilder.build())
-                .addFunction(adapterFromFunction)
-                .build()
+        val adapterViewTypesFile = JavaFile.builder("com.chrynan.aaaah", adapterViewTypesSpecBuilder.build()).build()
+        val adapterViewTypeSingularFile = JavaFile.builder("com.chrynan.aaaah", adapterViewTypeSingularTypeSpecBuilder.build()).build()
 
-        file.writeTo(File(processingEnv.options["kapt.kotlin.generated"], "AdapterViewTypes"))
+        adapterViewTypesFile.writeTo(processingEnv.filer)
+        adapterViewTypeSingularFile.writeTo(processingEnv.filer)
 
         return false
     }
