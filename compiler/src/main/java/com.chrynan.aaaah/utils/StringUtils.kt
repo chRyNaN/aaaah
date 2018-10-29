@@ -1,4 +1,4 @@
-package com.chrynan.aaaah
+package com.chrynan.aaaah.utils
 
 fun String.toConstantFieldName(): String {
     val nameStringBuilder = StringBuilder()
