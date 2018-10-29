@@ -89,6 +89,8 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
             count += 1
         }
 
+        adapterViewTypesSpecBuilder.addMethod(constructorBuilder.build())
+
         adapterViewTypesSpecBuilder.addMethod(MethodSpec.methodBuilder("getViewTypes")
                 .returns(viewTypesMapClassName)
                 .addModifiers(Modifier.PUBLIC)
@@ -106,10 +108,10 @@ class AdapterAnnotationProcessor : AbstractProcessor() {
                                 .addParameter(anotherAdapterGenericJavaClassName, "clazz")
                                 .addCode("" +
                                         "Integer viewType = AdapterViewTypes.getInstance().getViewTypes().get(clazz);\n" +
-                                        "if (viewType == null) {" +
-                                        "    return -1;" +
-                                        "} else { " +
-                                        "    return viewType;" +
+                                        "if (viewType == null) {\n" +
+                                        "    return -1;\n" +
+                                        "} else {\n" +
+                                        "    return viewType;\n" +
                                         "}"
                                 )
                                 .build())
