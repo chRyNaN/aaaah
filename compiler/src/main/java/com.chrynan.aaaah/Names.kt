@@ -7,7 +7,7 @@ object Names {
     const val ADAPTER_VIEW_TYPE_EXTENSION = "AdapterViewTypeExtensionKt"
     const val ADAPTER_VIEW_TYPES_PROVIDER = "AdapterViewTypesProvider"
     const val ADAPTER_VIEW_TYPE = "AdapterViewType"
-    const val JAVA_CLASS = "JAVA_CLASS"
+    const val JAVA_CLASS = "Class"
     const val VIEW_TYPE = "ViewType"
 }
 
