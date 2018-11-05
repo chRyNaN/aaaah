@@ -46,7 +46,7 @@ class AdapterViewTypesBuilder(private val annotatedClasses: List<AdapterAnnotate
 
     private fun TypeSpec.Builder.createMap() =
             addField(FieldSpec.builder(viewTypesMapClassName, "map")
-                    .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                    .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                     .initializer("new \$T()", viewTypesHashMapClassName)
                     .build())
 
