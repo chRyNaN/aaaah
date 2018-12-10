@@ -98,7 +98,7 @@ AdapterViewTypes.MyConstantName
 ## DSL
 
 ```kotlin
-myRecyclerView.adapter = anotherAdapterManager<UniqueAdapterItem> {
+myRecyclerView.adapter = anotherAdapterManager<UniqueAdapterItem> { // Or could use `adapters { ... }`
     anotherAdapter<ItemOne> {
         viewType = AdapterViewTypes.ITEM_ONE
         handlesItem { it is ItemOne }
