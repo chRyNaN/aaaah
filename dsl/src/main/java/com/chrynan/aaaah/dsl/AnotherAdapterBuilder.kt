@@ -4,13 +4,8 @@ package com.chrynan.aaaah.dsl
 
 import android.view.View
 import android.view.ViewGroup
-import com.chrynan.aaaah.AnotherAdapter
-import com.chrynan.aaaah.ViewType
+import com.chrynan.aaaah.*
 import kotlin.properties.Delegates
-
-typealias HandlesItem = (item: Any) -> Boolean
-typealias CreateView = (parent: ViewGroup, viewType: ViewType) -> View
-typealias BindItem<M> = (view: View, item: M) -> Unit
 
 class AnotherAdapterBuilder<M : Any> internal constructor() {
 

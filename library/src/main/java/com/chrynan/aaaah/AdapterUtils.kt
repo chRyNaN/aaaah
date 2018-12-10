@@ -5,10 +5,14 @@ package com.chrynan.aaaah
 import android.view.View
 import android.view.ViewGroup
 
+typealias HandlesItem = (item: Any) -> Boolean
+typealias CreateView = (parent: ViewGroup, viewType: ViewType) -> View
+typealias BindItem<M> = (view: View, item: M) -> Unit
+
 inline fun <reified M : Any> anotherAdapter(viewType: ViewType,
-                                            crossinline onCreateView: (parent: ViewGroup, viewType: ViewType) -> View,
-                                            crossinline onHandlesItem: (item: Any) -> Boolean,
-                                            crossinline onBindItem: (view: View, item: M) -> Unit): AnotherAdapter<M> =
+                                            crossinline onCreateView: CreateView,
+                                            crossinline onHandlesItem: HandlesItem,
+                                            crossinline onBindItem: BindItem<M>): AnotherAdapter<M> =
         object : AnotherAdapter<M>() {
 
             override val viewType = viewType
