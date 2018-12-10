@@ -36,3 +36,9 @@ fun <T : Any> adapters(block: ManagerRecyclerViewAdapterBuilder<T>.() -> Unit): 
     block(builder)
     return builder.build()
 }
+
+fun <T : Any> anotherAdapterManager(block: ManagerRecyclerViewAdapterBuilder<T>.() -> Unit): ManagerRecyclerViewAdapter<T> {
+    val builder = ManagerRecyclerViewAdapterBuilder<T>()
+    block(builder)
+    return builder.build()
+}
