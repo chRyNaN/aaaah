@@ -18,6 +18,10 @@ implementation 'com.github.chRyNaN.aaaah:annotation:VERSION'
 ```groovy
 implementation 'com.github.chRyNaN.aaaah:compiler:VERSION'
 ```
+**DSL (Optional):**
+```groovy
+implementation 'com.github.chRyNaN.aaaah:dsl:VERSION'
+```
 
 ## Using the Library
 
@@ -89,4 +93,21 @@ The generated constant names can be overriden by providing a value to the `name`
 @Adapter(name = "MyConstantName")
 // Results in:
 AdapterViewTypes.MyConstantName
+```
+
+## DSL
+
+```kotlin
+myRecyclerView.adapter = anotherAdapterManager<UniqueAdapterItem> {
+    anotherAdapter<ItemOne> {
+        viewType = AdapterViewTypes.ITEM_ONE
+        handlesItem { it is ItemOne }
+        createView { parent, viewType -> 
+            LayoutInflater.from(parent.context).inflate(R.layout.my_adapter_layout_file, parent, false)
+        }
+        bindItem { view, item -> 
+            // Bind the Item to the View
+        }
+    }
+}
 ```
