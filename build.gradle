@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 ext {
-    libraryVersion = '0.2.2'
+    libraryVersion = '0.2.3'
 }
 
 group 'com.chrynan'
