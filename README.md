@@ -6,6 +6,8 @@
 
 ## Building
 
+The library is provided through [JitPack](https://jitpack.io/#chRyNaN/aaaah).
+
 **Base Library:**
 ```groovy
 implementation 'com.github.chRyNaN.aaaah:library:VERSION'
