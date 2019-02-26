@@ -1,5 +1,5 @@
 rootProject.name = 'aaaah'
-include ':library'
+include ':library', ':libraryx'
 include ':annotation'
 include ':compiler'
 include ':dsl'
