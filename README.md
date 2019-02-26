@@ -12,6 +12,10 @@ The library is provided through [JitPack](https://jitpack.io/#chRyNaN/aaaah).
 ```groovy
 implementation 'com.github.chRyNaN.aaaah:library:VERSION'
 ```
+**Base Androidx Library:**
+```groovy
+implementation 'com.github.chRyNaN.aaaah:libraryx:VERSION'
+```
 **Annotations (Optional):**
 ```groovy
 implementation 'com.github.chRyNaN.aaaah:annotation:VERSION'
