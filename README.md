@@ -22,7 +22,7 @@ implementation 'com.github.chRyNaN.aaaah:annotation:VERSION'
 ```
 **Annotation Processor (Optional):**
 ```groovy
-implementation 'com.github.chRyNaN.aaaah:compiler:VERSION'
+kapt 'com.github.chRyNaN.aaaah:compiler:VERSION'
 ```
 **DSL (Optional):**
 ```groovy
@@ -85,7 +85,7 @@ class MyAdapter: AnotherAdapter<MyItem>() {
 
 * Build the project (make sure to have both the compiler and annotations libraries in the dependencies)
 
-A class, `AdapterViewTypes` will be generated with View Type constants for each class annotated with the `Adapter` annotation. Also, a more specific `AdapterViewType.from()` extension function will be generated. Either approach could be used to access the View Type for each adapter:
+A class, `AdapterViewTypes`, will be generated with View Type constants for each class annotated with the `Adapter` annotation. Also, a more specific `AdapterViewType.from()` extension function will be generated. Either approach could be used to access the View Type for each adapter:
 ```kotlin
 AdapterViewTypes.MY_ADAPTER
 // or
