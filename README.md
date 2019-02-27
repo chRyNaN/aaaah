@@ -3,6 +3,7 @@
 ## Another Android Adapter Abstraction Here
 
 [![](https://jitpack.io/v/chRyNaN/aaaah.svg)](https://jitpack.io/#chRyNaN/aaaah)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-aaaah-green.svg?style=flat)](https://android-arsenal.com/details/1/7535)
 
 ## Building
 
