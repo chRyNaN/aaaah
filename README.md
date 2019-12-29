@@ -17,6 +17,10 @@ implementation 'com.github.chRyNaN.aaaah:library:VERSION'
 ```groovy
 implementation 'com.github.chRyNaN.aaaah:libraryx:VERSION'
 ```
+**Core (Kotlin Multi-platform Classes):**
+```groovy
+implementation 'com.github.chRyNaN.aaaah:core:VERSION'
+```
 **Annotations (Optional):**
 ```groovy
 implementation 'com.github.chRyNaN.aaaah:annotation:VERSION'

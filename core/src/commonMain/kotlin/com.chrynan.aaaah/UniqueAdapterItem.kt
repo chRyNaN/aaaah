@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package com.chrynan.aaaah
 
 typealias AdapterId = Long
