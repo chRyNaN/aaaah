@@ -1,7 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
-apply plugin: 'com.github.dcendents.android-maven'
 
 group rootProject.ext.libraryGroup
 version rootProject.ext.libraryVersion

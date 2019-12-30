@@ -1,8 +1,10 @@
 rootProject.name = 'aaaah'
-include ':library', ':libraryx'
+
+include ':core'
+include ':library'
+include ':libraryx'
 include ':annotation'
 include ':compiler'
 include ':dsl'
-include ':core'
 
 enableFeaturePreview('GRADLE_METADATA')
