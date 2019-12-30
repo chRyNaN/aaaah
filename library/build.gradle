@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group 'com.chrynan'
+group rootProject.ext.libraryGroup
 version rootProject.ext.libraryVersion
 
 android {
@@ -11,7 +11,7 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 1
+        versionCode rootProject.ext.libraryVersionCode
         versionName rootProject.ext.libraryVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

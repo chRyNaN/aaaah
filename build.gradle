@@ -1,7 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 ext {
+    libraryGroup = 'com.chrynan'
+    libraryOwner = 'chrynan'
+    libraryRepo = 'aaaah'
     libraryVersion = '0.3.0'
+    libraryVersionCode = 1
 }
 
 group 'com.chrynan'
@@ -28,5 +32,25 @@ allprojects {
     repositories {
         google()
         jcenter()
+    }
+}
+
+subprojects {
+    apply plugin: "maven-publish"
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/${libraryOwner}/${libraryRepo}")
+
+                credentials {
+                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+                    password = project.findProperty("gpr.key") ?: System.getenv("KEY")
+                }
+            }
+        }
+        publications {
+
+        }
     }
 }

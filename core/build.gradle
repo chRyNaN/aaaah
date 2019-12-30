@@ -1,7 +1,7 @@
 apply plugin: 'kotlin-multiplatform'
 
-group 'com.chrynan'
-version rootProject.libraryVersion
+group rootProject.ext.libraryGroup
+version rootProject.ext.libraryVersion
 
 kotlin {
     targets {
