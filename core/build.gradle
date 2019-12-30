@@ -39,6 +39,8 @@ publishing {
         }
     }
     publications {
-
+        kotlinMultiplatform {
+            artifactId = "aaaah-core"
+        }
     }
 }

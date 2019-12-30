@@ -4,7 +4,7 @@ ext {
     libraryGroup = 'com.chrynan'
     libraryOwner = 'chrynan'
     libraryRepo = 'aaaah'
-    libraryVersion = '0.3.2'
+    libraryVersion = '0.3.3'
     libraryVersionCode = 1
 }
 

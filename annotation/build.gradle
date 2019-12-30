@@ -28,6 +28,7 @@ publishing {
     publications {
         gpr(MavenPublication) {
             from(components.java)
+            artifactId 'aaaah-annotation'
         }
     }
 }

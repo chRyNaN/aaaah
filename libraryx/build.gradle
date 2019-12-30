@@ -44,6 +44,7 @@ publishing {
     publications {
         gpr(MavenPublication) {
             from(components.android)
+            artifactId 'aaaah-libraryx'
         }
     }
 }
