@@ -42,5 +42,11 @@ publishing {
         kotlinMultiplatform {
             artifactId = "aaaah-core"
         }
+        jvm {
+            artifactId = "aaaah-core-jvm"
+        }
+        metadata {
+            artifactId = "aaaah-core-metadata"
+        }
     }
 }
