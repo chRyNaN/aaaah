@@ -7,31 +7,50 @@
 
 ## Building
 
-The library is provided through [JitPack](https://jitpack.io/#chRyNaN/aaaah).
+The library is provided through [Github Packages](https://github.com/chRyNaN/aaaah/packages). Refer to the [releases](https://github.com/chRyNaN/aaaah/releases) for the latest version.
 
+### Repository
+```kotlin
+maven {
+    url = uri("https://maven.pkg.github.com/chRyNaN/logger")
+    credentials {
+        // "gpr.user" is your Github username stored in your LOCAL git properties file
+        // "gpr.key" is your Github personal access token stored in your LOCAL git properties file
+        // Note that these may not be required since the project is public
+        username = project.findProperty("gpr.user") as? String?
+        password = project.findProperty("gpr.key") as? String?
+    }
+}
+```
+
+### Dependencies
 **Base Library:**
 ```groovy
-implementation 'com.github.chRyNaN.aaaah:library:VERSION'
+implementation 'com.chrynan.aaaah:aaaah-library:VERSION'
 ```
 **Base Androidx Library:**
 ```groovy
-implementation 'com.github.chRyNaN.aaaah:libraryx:VERSION'
+implementation 'com.chrynan.aaaah:aaaah-libraryx:VERSION'
 ```
-**Core (Kotlin Multi-platform Classes):**
+**Core Common (Kotlin Multi-platform Classes):**
 ```groovy
-implementation 'com.github.chRyNaN.aaaah:core:VERSION'
+implementation 'com.chrynan.aaaah:aaaah-core:VERSION'
+```
+**Core JVM (Kotlin Multi-platform Classes):**
+```groovy
+implementation 'com.chrynan.aaaah:aaaah-core-jvm:VERSION'
 ```
 **Annotations (Optional):**
 ```groovy
-implementation 'com.github.chRyNaN.aaaah:annotation:VERSION'
+implementation 'com.chrynan.aaaah:aaaah-annotation:VERSION'
 ```
 **Annotation Processor (Optional):**
 ```groovy
-kapt 'com.github.chRyNaN.aaaah:compiler:VERSION'
+kapt 'com.chrynan.aaaah:aaaah-compiler:VERSION'
 ```
 **DSL (Optional):**
 ```groovy
-implementation 'com.github.chRyNaN.aaaah:dsl:VERSION'
+implementation 'com.chrynan.aaaah:aaaah-dsl:VERSION'
 ```
 
 ## Using the Library
