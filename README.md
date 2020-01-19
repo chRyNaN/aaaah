@@ -12,7 +12,7 @@ The library is provided through [Github Packages](https://github.com/chRyNaN/aaa
 ### Repository
 ```kotlin
 maven {
-    url = uri("https://maven.pkg.github.com/chRyNaN/logger")
+    url = uri("https://maven.pkg.github.com/chRyNaN/aaaah")
     credentials {
         // "gpr.user" is your Github username stored in your LOCAL git properties file
         // "gpr.key" is your Github personal access token stored in your LOCAL git properties file
