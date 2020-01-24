@@ -7,4 +7,4 @@ interface UniqueAdapterItem {
     val uniqueAdapterId: AdapterId
 }
 
-inline fun <reified T : Any> T.asUniqueAdapterId() = hashCode().toLong()
+inline fun <reified T : Any> T.asUniqueAdapterId(): AdapterId = hashCode().toLong()

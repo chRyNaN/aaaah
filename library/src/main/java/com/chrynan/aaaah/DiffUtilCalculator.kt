@@ -1,9 +1,9 @@
 package com.chrynan.aaaah
 
-import androidx.recyclerview.widget.DiffUtil
+import android.support.v7.util.DiffUtil
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-open class DiffProcessor<T : UniqueAdapterItem> : DiffUtil.Callback() {
+open class DiffUtilCalculator<T : UniqueAdapterItem> : DiffUtil.Callback() {
 
     var currentList: List<T> = emptyList()
         set(value) {
@@ -21,8 +21,10 @@ open class DiffProcessor<T : UniqueAdapterItem> : DiffUtil.Callback() {
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = lastList[oldItemPosition] == currentList[newItemPosition]
 
-    fun calculateDiff(sortedItems: List<T>): DiffUtil.DiffResult {
+    fun calculateDiff(sortedItems: List<T>): AndroidDiffResult<T> {
         currentList = sortedItems
-        return DiffUtil.calculateDiff(this)
+        return AndroidDiffResult(
+                items = sortedItems,
+                diffUtilResult = DiffUtil.calculateDiff(this))
     }
 }

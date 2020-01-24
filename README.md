@@ -76,7 +76,32 @@ val managerAdapter = ManagerRecyclerViewAdapter(adapters = setOf(MyAdapter()))
 ```kotlin
 recyclerView?.apply {
   adapter = managerAdapter
-  layoutManager = LinearLayoutManager(context) // Or Whatever LayoutManager Needed
+  layoutManager = LinearLayoutManager(context) // Or whatever LayoutManager needed
+}
+```
+
+### Quick Adapter Creation
+There is a convenience function which is a shortened syntax to create an Adapter. This could be useful for quick basic adapters.
+```kotlin
+val myAdapter = anotherAdapter<ItemType>(viewType = myViewType, viewResId = R.layout.my_adapter_layout) { item ->
+    // this refers to the containing Android View
+    this.findViewById<TextView>(R.id.myTextView)?.text = item.title
+}
+```
+
+Then to assign the Adapter to a RecyclerView, wrap it in a `ManagerRecyclerViewAdapter`:
+```kotlin
+recyclerView?.apply {
+    adapter = anotherManagerAdapter(myAdapter)
+    layoutManager = LinearLayoutManager(context) // Or whatever LayoutManager needed
+}
+```
+
+If only one Adapter is needed, there's no need to explicitly wrap the Adapter, just call the `RecyclerView.adapter()` extension function:
+```kotlin
+recyclerView?.apply {
+    adapter(myAdapter)
+    layoutManager = LinearLayoutManager(context) // Or whatever LayoutManager needed
 }
 ```
 
@@ -124,9 +149,10 @@ AdapterViewTypes.MyConstantName
 
 ```kotlin
 myRecyclerView.adapter = anotherAdapterManager<UniqueAdapterItem> { // Or could use `adapters { ... }`
-    anotherAdapter<ItemOne> {
+    // Use the DSL directly
+    anotherAdapter<ItemTypeOne> {
         viewType = AdapterViewTypes.ITEM_ONE
-        handlesItem { it is ItemOne }
+        handlesItem { it is ItemTypeOne }
         createView { parent, viewType -> 
             LayoutInflater.from(parent.context).inflate(R.layout.my_adapter_layout_file, parent, false)
         }
@@ -134,5 +160,74 @@ myRecyclerView.adapter = anotherAdapterManager<UniqueAdapterItem> { // Or could 
             // Bind the Item to the View
         }
     }
+
+    // Or Provide an already created adapter
+    anotherAdapter<ItemTypeTwo>(myAdapter)
 }
 ```
+
+## Processing Item Changes
+The library comes with a `DiffUtilCalculator` class which is a basic implementation of RecyclerView's `DiffUtil.Callback` for a `UniqueAdapterItem`. This class can be used for most cases but if additional functionality is needed, the class is extensible. The `DiffUtilCalculator.calculateDiff()` function takes in a parameter of list items and calculates the diff and returns an `AndroidDiffResult` which is a wrapper around the RecyclerView's `DiffUtil.DiffResult`.
+```kotlin
+val diffCalculator = DiffUtilCalculator<UniqueAdapterItem>()
+
+val result = diffCalculator.calculateDiff(sortedItems = myNewListItems)
+
+// myListUpdater is an implementation of the ItemListUpdater interface
+myListUpdater.items = result.items
+result.diffUtilResult.dispatchItemsTo(myListUpdater)
+```
+
+The library contains a `DiffProcessor` interface in the Kotlin common `core` module and an `AndroidDiffProcessor` implementation which encapsulates the processing logic.
+```kotlin
+val processor = AndroidDiffProcessor(DiffUtilCalculator())
+
+val result = processor.processDiff(myNewListItems)
+```
+
+The library also contains a `DiffDispatcher` interface in the Kotlin common `core` module and an `AndroidDiffDispatcher` implementation which encapsulates the dispatching logic.
+```kotlin
+val dispatcher = AndroidDiffDispatcher(myItemListUpdater)
+
+dispatcher.dispatchDiff(result)
+```
+
+Both the `DiffProcessor.processDiff` and the `DiffDispatcher.dispatchDiff` functions are *suspending functions*. This is because these tasks should be performed off the UI Thread.
+
+One common use case is to process and dispatch diffs from a Kotlin Coroutine `Flow`. Since this library doesn't have the Coroutine Library as a dependency, there is some manual work involved to simplify this approach. A recommend approach is the following:
+```kotlin
+interface AdapterItemHandler<VM : UniqueAdapterItem> {
+
+    fun Flow<Collection<VM>>.calculateAndDispatchDiff(): Flow<DiffResult<VM>>
+}
+
+class BaseAdapterItemHandler<VM : UniqueAdapterItem> @Inject constructor(
+        private val diffProcessor: DiffProcessor<VM>,
+        private val diffDispatcher: DiffDispatcher<VM>,
+        private val coroutineDispatchers: CoroutineDispatchers // Note this is just a convenience wrapper around the available Coroutine Dispatchers
+) : AdapterItemHandler<VM> {
+
+    @ExperimentalCoroutinesApi
+    override fun Flow<Collection<VM>>.calculateAndDispatchDiff(): Flow<DiffResult<VM>> =
+            map(diffProcessor::processDiff)
+                    .flowOn(coroutineDispatchers.io)
+                    .onEach { diffDispatcher.dispatchDiff(it) }
+                    .flowOn(coroutineDispatchers.main)
+}
+
+class MyPresenter @Inject constructor(
+    adapterItemHandler: AdapterItemHandler<UniqueAdapterItem>,
+    private val scope: CoroutineScope,
+    private val mapper: MyMapper,
+    private val repo: MyRepository
+) : Presenter,
+    AdapterItemHandler<UniqueAdapterItem> by adapterItemHandler {
+
+    fun getItems(){
+        repo.getItems()
+            .map(mapper::suspendMapping)
+            .calculateAndDispatchDiff()
+            .launchIn(scope)
+    }
+}
+``` 

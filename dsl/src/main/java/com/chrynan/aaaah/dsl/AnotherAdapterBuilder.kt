@@ -28,10 +28,6 @@ class AnotherAdapterBuilder<M : Any> internal constructor() {
     }
 
     internal fun build(): AnotherAdapter<M> {
-        checkNotNull(viewType) { "Must provide a ViewType in the anotherAdapter DSL function block." }
-        checkNotNull(handlesItem) { "Must provide a handlesItem function in the anotherAdapter DSL function block." }
-        checkNotNull(createView) { "Must provide a createView function in the anotherAdapter DSL function block." }
-        checkNotNull(bindItem) { "Must provide a bindItem function in the anotherAdapter DSL function block." }
 
         return ParameterProvidedAnotherAdapter(
                 viewType = viewType,

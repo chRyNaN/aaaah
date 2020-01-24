@@ -2,6 +2,7 @@ package com.chrynan.aaaah
 
 import android.view.View
 import android.view.ViewGroup
+import com.chrynan.aaaah.*
 
 abstract class AnotherAdapter<M : Any> {
 

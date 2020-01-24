@@ -2,8 +2,10 @@
 
 package com.chrynan.aaaah
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 
 typealias HandlesItem = (item: Any) -> Boolean
 typealias CreateView = (parent: ViewGroup, viewType: ViewType) -> View
@@ -26,3 +28,20 @@ inline fun <reified M : Any> anotherAdapter(viewType: ViewType,
 
 inline fun <reified M : Any> anotherAdapterManager(vararg adapters: AnotherAdapter<*>) =
         ManagerRecyclerViewAdapter<M>(adapters = adapters.toSet())
+
+inline fun <reified M : Any> anotherAdapter(viewType: ViewType, viewResId: Int, crossinline bind: View.(M) -> Unit) =
+        object : AnotherAdapter<M>() {
+
+            override val viewType = viewType
+
+            override fun onHandlesItem(item: Any) = item is M
+
+            override fun onCreateView(parent: ViewGroup, viewType: ViewType): View =
+                    LayoutInflater.from(parent.context).inflate(viewResId, parent, false)
+
+            override fun onBindItem(view: View, item: M) = view.bind(item)
+        }
+
+inline fun <reified M : Any> RecyclerView.adapter(anotherAdapter: AnotherAdapter<M>) {
+    this.adapter = anotherAdapterManager<M>(anotherAdapter)
+}
