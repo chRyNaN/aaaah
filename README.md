@@ -7,18 +7,13 @@
 
 ## Building
 
-The library is provided through [Github Packages](https://github.com/chRyNaN/aaaah/packages). Refer to the [releases](https://github.com/chRyNaN/aaaah/releases) for the latest version.
+The library is provided through [Bintray](https://bintray.com/). Refer to the [releases](https://github.com/chRyNaN/aaaah/releases) for the latest version.
 
 ### Repository
 ```kotlin
-maven {
-    url = uri("https://maven.pkg.github.com/chRyNaN/aaaah")
-    credentials {
-        // "gpr.user" is your Github username stored in your LOCAL git properties file
-        // "gpr.key" is your Github personal access token stored in your LOCAL git properties file
-        // Note that these may not be required since the project is public
-        username = project.findProperty("gpr.user") as? String?
-        password = project.findProperty("gpr.key") as? String?
+repositories {
+    maven {
+        url = uri("https://dl.bintray.com/chrynan/chrynan")
     }
 }
 ```
