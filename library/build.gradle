@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
 apply plugin: 'digital.wup.android-maven-publish'
 
 group rootProject.ext.libraryGroup
@@ -30,19 +29,8 @@ dependencies {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/${libraryOwner}/${libraryRepo}")
-
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") ?: System.getenv("KEY")
-            }
-        }
-    }
     publications {
-        gpr(MavenPublication) {
+        BintrayPub(MavenPublication) {
             from(components.android)
             artifactId 'aaaah-library'
         }
