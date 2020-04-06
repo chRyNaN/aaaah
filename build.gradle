@@ -5,8 +5,8 @@ ext {
     libraryGroup = 'com.chrynan.aaaah'
     libraryOwner = 'chrynan'
     libraryRepo = 'aaaah'
-    libraryVersion = '0.6.0'
-    libraryVersionCode = 1
+    libraryVersion = '0.7.0'
+    libraryVersionCode = 2
     libraryVersionDescription = 'Second Major Release'
     githubURL = 'https://github.com/chRyNaN/aaaah.git'
 }
