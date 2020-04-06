@@ -13,10 +13,10 @@ abstract class AnotherAdapter<M : Any> {
 
     abstract fun onCreateView(parent: ViewGroup, inflater: LayoutInflater, viewType: ViewType): View
 
-    abstract fun View.onBindItem(item: M)
+    abstract fun View.onBindItem(item: M, position: Int)
 
-    internal fun bindItem(view: View, item: Any) {
-        castOrNull(item)?.let { view.onBindItem(it) }
+    internal fun bindItem(view: View, item: Any, position: Int) {
+        castOrNull(item)?.let { view.onBindItem(it, position) }
     }
 
     @Suppress("UNCHECKED_CAST")

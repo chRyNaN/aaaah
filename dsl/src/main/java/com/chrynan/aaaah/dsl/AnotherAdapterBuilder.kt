@@ -49,7 +49,7 @@ internal class ParameterProvidedAnotherAdapter<M : Any>(
 
     override fun onCreateView(parent: ViewGroup, inflater: LayoutInflater, viewType: ViewType) = createView(parent, inflater, viewType)
 
-    override fun View.onBindItem(item: M) = bindItem(item)
+    override fun View.onBindItem(item: M, position: Int) = bindItem(item, position)
 }
 
 fun <M : Any> anotherAdapter(block: AnotherAdapterBuilder<M>.() -> Unit): AnotherAdapter<M> {
