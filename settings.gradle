@@ -1,7 +1,6 @@
 rootProject.name = 'aaaah'
 
 include ':core'
-include ':library'
 include ':libraryx'
 include ':annotation'
 include ':compiler'

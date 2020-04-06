@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 typealias HandlesItem = (item: Any) -> Boolean
 typealias CreateView = (parent: ViewGroup, viewType: ViewType) -> View
-typealias BindItem<M> = (view: View, item: M) -> Unit
+typealias BindItem<M> = View.(item: M) -> Unit
 
 inline fun <reified M : Any> anotherAdapter(viewType: ViewType,
                                             crossinline onCreateView: CreateView,
@@ -23,7 +23,7 @@ inline fun <reified M : Any> anotherAdapter(viewType: ViewType,
 
             override fun onCreateView(parent: ViewGroup, viewType: ViewType) = onCreateView(parent, viewType)
 
-            override fun onBindItem(view: View, item: M) = onBindItem(view, item)
+            override fun View.onBindItem(item: M) = onBindItem(item)
         }
 
 inline fun <reified M : Any> anotherAdapterManager(vararg adapters: AnotherAdapter<*>) =
@@ -39,7 +39,7 @@ inline fun <reified M : Any> anotherAdapter(viewType: ViewType, viewResId: Int, 
             override fun onCreateView(parent: ViewGroup, viewType: ViewType): View =
                     LayoutInflater.from(parent.context).inflate(viewResId, parent, false)
 
-            override fun onBindItem(view: View, item: M) = view.bind(item)
+            override fun View.onBindItem(item: M) = bind(item)
         }
 
 inline fun <reified M : Any> RecyclerView.adapter(anotherAdapter: AnotherAdapter<M>) {

@@ -48,7 +48,7 @@ internal class ParameterProvidedAnotherAdapter<M : Any>(
 
     override fun onCreateView(parent: ViewGroup, viewType: ViewType) = createView(parent, viewType)
 
-    override fun onBindItem(view: View, item: M) = bindItem(view, item)
+    override fun View.onBindItem(item: M) = bindItem(item)
 }
 
 fun <M : Any> anotherAdapter(block: AnotherAdapterBuilder<M>.() -> Unit): AnotherAdapter<M> {
