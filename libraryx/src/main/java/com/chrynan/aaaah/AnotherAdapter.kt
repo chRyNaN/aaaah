@@ -1,5 +1,6 @@
 package com.chrynan.aaaah
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
@@ -10,7 +11,7 @@ abstract class AnotherAdapter<M : Any> {
     // Don't try to make this take a generic parameter, it doesn't work
     abstract fun onHandlesItem(item: Any): Boolean
 
-    abstract fun onCreateView(parent: ViewGroup, viewType: ViewType): View
+    abstract fun onCreateView(parent: ViewGroup, inflater: LayoutInflater, viewType: ViewType): View
 
     abstract fun View.onBindItem(item: M)
 

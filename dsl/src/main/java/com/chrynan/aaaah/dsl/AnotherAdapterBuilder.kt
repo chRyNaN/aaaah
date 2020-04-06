@@ -2,6 +2,7 @@
 
 package com.chrynan.aaaah.dsl
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.chrynan.aaaah.*
@@ -46,7 +47,7 @@ internal class ParameterProvidedAnotherAdapter<M : Any>(
 
     override fun onHandlesItem(item: Any) = handlesItem(item)
 
-    override fun onCreateView(parent: ViewGroup, viewType: ViewType) = createView(parent, viewType)
+    override fun onCreateView(parent: ViewGroup, inflater: LayoutInflater, viewType: ViewType) = createView(parent, inflater, viewType)
 
     override fun View.onBindItem(item: M) = bindItem(item)
 }

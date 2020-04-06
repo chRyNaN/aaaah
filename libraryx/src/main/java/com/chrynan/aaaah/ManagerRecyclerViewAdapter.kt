@@ -1,5 +1,6 @@
 package com.chrynan.aaaah
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -18,8 +19,11 @@ open class ManagerRecyclerViewAdapter<T : Any>(private val adapters: Set<Another
     override fun getItemViewType(position: Int) =
             getAdapterForItem(items[position])?.viewType ?: super.getItemViewType(position)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(view = getAdapterForViewType(viewType)!!.onCreateView(parent, viewType))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+
+        return ViewHolder(view = getAdapterForViewType(viewType)!!.onCreateView(parent, inflater, viewType))
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
