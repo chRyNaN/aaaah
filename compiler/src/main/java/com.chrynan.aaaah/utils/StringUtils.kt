@@ -5,7 +5,7 @@ fun String.toConstantFieldName(): String {
 
     val chars = toCharArray()
 
-    for (i in 0 until chars.size) {
+    for (i in chars.indices) {
         val char = chars[i]
 
         if (Character.isUpperCase(char) && i != 0) {
