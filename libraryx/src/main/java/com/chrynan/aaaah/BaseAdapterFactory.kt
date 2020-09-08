@@ -1,10 +1,15 @@
+@file:Suppress("unused")
+
 package com.chrynan.aaaah
 
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineDispatcher
 
 abstract class BaseAdapterFactory<VM : UniqueAdapterItem> : AdapterFactory<VM> {
 
     abstract val adapters: Set<AnotherAdapter<*>>
+    abstract val processDispatcher: CoroutineDispatcher
+    abstract val uiDispatcher: CoroutineDispatcher
 
     @Suppress("RemoveExplicitTypeArguments") // For some reason the build fails without the explicit type parameter
     override val decorators: List<RecyclerView.ItemDecoration> by lazy { emptyList<RecyclerView.ItemDecoration>() }
@@ -22,5 +27,14 @@ abstract class BaseAdapterFactory<VM : UniqueAdapterItem> : AdapterFactory<VM> {
 
     override val adapter: ManagerRecyclerViewAdapter<VM> by lazy {
         ManagerRecyclerViewAdapter<VM>(adapters = adapters)
+    }
+
+    override val adapterItemHandler: AdapterItemHandler<VM> by lazy {
+        BaseAdapterItemHandler(
+            diffProcessor = diffProcessor,
+            diffDispatcher = diffDispatcher,
+            processDispatcher = processDispatcher,
+            uiDispatcher = uiDispatcher
+        )
     }
 }
