@@ -1,5 +1,5 @@
-apply plugin: 'kotlin-multiplatform'
-apply plugin: 'maven-publish'
+apply plugin: "kotlin-multiplatform"
+apply plugin: "maven-publish"
 
 group rootProject.ext.libraryGroup
 version rootProject.ext.libraryVersion
@@ -11,12 +11,12 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-common"
             }
         }
         jvmMain {
             dependencies {
-                implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+                implementation "org.jetbrains.kotlin:kotlin-stdlib"
             }
         }
     }

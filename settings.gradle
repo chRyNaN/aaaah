@@ -1,9 +1,9 @@
-rootProject.name = 'aaaah'
+rootProject.name = "aaaah"
 
-include ':core'
-include ':libraryx'
-include ':annotation'
-include ':compiler'
-include ':dsl'
+include ":core"
+include ":libraryx"
+include ":annotation"
+include ":compiler"
+include ":dsl"
 
-enableFeaturePreview('GRADLE_METADATA')
+enableFeaturePreview("GRADLE_METADATA")

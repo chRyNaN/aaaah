@@ -1,34 +1,30 @@
 import org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact
 
 ext {
-    bintrayRepo = 'chrynan'
-    libraryGroup = 'com.chrynan.aaaah'
-    libraryOwner = 'chrynan'
-    libraryRepo = 'aaaah'
-    libraryVersion = '0.7.0'
+    bintrayRepo = "chrynan"
+    libraryGroup = "com.chrynan.aaaah"
+    libraryOwner = "chrynan"
+    libraryRepo = "aaaah"
+    libraryVersion = "0.7.0"
     libraryVersionCode = 2
-    libraryVersionDescription = 'Second Major Release'
-    githubURL = 'https://github.com/chRyNaN/aaaah.git'
+    libraryVersionDescription = "Second Major Release"
+    githubURL = "https://github.com/chRyNaN/aaaah.git"
 }
 
 group libraryGroup
 version libraryVersion
 
 buildscript {
-    ext.kotlin_version = '1.3.61'
     repositories {
         mavenCentral()
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.2'
+        classpath "com.android.tools.build:gradle:3.6.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.71"
-        classpath 'digital.wup:android-maven-publish:3.6.2'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath "digital.wup:android-maven-publish:3.6.2"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
     }
 }
 
@@ -40,17 +36,17 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'maven'
-    apply plugin: 'maven-publish'
-    apply plugin: 'com.jfrog.bintray'
+    apply plugin: "maven"
+    apply plugin: "maven-publish"
+    apply plugin: "com.jfrog.bintray"
 
     bintray {
-        user = project.findProperty("BINTRAY_USER") ?: System.getenv('BINTRAY_USER')
-        key = project.findProperty("BINTRAY_KEY") ?: System.getenv('BINTRAY_KEY')
+        user = project.findProperty("BINTRAY_USER") ?: System.getenv("BINTRAY_USER")
+        key = project.findProperty("BINTRAY_KEY") ?: System.getenv("BINTRAY_KEY")
         pkg {
             repo = rootProject.bintrayRepo
             name = rootProject.libraryRepo
-            licenses = ['Apache-2.0']
+            licenses = ["Apache-2.0"]
             vcsUrl = rootProject.githubURL
             version {
                 name = rootProject.libraryVersion
