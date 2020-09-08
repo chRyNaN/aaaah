@@ -1,8 +1,10 @@
+import com.chrynan.aaaah.buildSrc.LibraryConstants
+
 apply plugin: "kotlin-multiplatform"
 apply plugin: "maven-publish"
 
-group rootProject.ext.libraryGroup
-version rootProject.ext.libraryVersion
+group LibraryConstants.group
+version LibraryConstants.versionName
 
 kotlin {
     targets {

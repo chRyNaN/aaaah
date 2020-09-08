@@ -1,17 +1,19 @@
+import com.chrynan.aaaah.buildSrc.LibraryConstants
+
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 apply plugin: "digital.wup.android-maven-publish"
 
-group rootProject.ext.libraryGroup
-version rootProject.ext.libraryVersion
+group LibraryConstants.group
+version LibraryConstants.versionName
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion LibraryConstants.androidCompileSdkVersion
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 29
-        versionCode rootProject.ext.libraryVersionCode
-        versionName rootProject.ext.libraryVersion
+        minSdkVersion LibraryConstants.androidMinSdkVersion
+        targetSdkVersion LibraryConstants.androidTargetSdkVersion
+        versionCode LibraryConstants.versionCode
+        versionName LibraryConstants.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

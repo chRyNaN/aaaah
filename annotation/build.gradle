@@ -1,8 +1,10 @@
+import com.chrynan.aaaah.buildSrc.LibraryConstants
+
 apply plugin: "kotlin"
 apply plugin: "kotlin-kapt"
 
-group rootProject.ext.libraryGroup
-version rootProject.ext.libraryVersion
+group LibraryConstants.group
+version LibraryConstants.versionName
 
 repositories {
     mavenCentral()
