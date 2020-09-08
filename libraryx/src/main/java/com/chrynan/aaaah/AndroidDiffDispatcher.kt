@@ -1,7 +1,7 @@
 package com.chrynan.aaaah
 
 class AndroidDiffDispatcher<VM : UniqueAdapterItem>(private val listener: ItemListUpdater<VM>) :
-        DiffDispatcher<VM> {
+    DiffDispatcher<VM> {
 
     override suspend fun dispatchDiff(diff: DiffResult<VM>) {
         listener.items = diff.items

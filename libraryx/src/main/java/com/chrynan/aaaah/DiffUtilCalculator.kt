@@ -17,14 +17,17 @@ open class DiffUtilCalculator<T : UniqueAdapterItem> : DiffUtil.Callback() {
 
     override fun getNewListSize(): Int = currentList.size
 
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = lastList[oldItemPosition].uniqueAdapterId == currentList[newItemPosition].uniqueAdapterId
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+        lastList[oldItemPosition].uniqueAdapterId == currentList[newItemPosition].uniqueAdapterId
 
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = lastList[oldItemPosition] == currentList[newItemPosition]
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+        lastList[oldItemPosition] == currentList[newItemPosition]
 
     fun calculateDiff(sortedItems: List<T>): AndroidDiffResult<T> {
         currentList = sortedItems
         return AndroidDiffResult(
-                items = sortedItems,
-                diffUtilResult = DiffUtil.calculateDiff(this))
+            items = sortedItems,
+            diffUtilResult = DiffUtil.calculateDiff(this)
+        )
     }
 }

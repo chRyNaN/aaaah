@@ -21,9 +21,9 @@ abstract class AnotherAdapter<M : Any> {
 
     @Suppress("UNCHECKED_CAST")
     private fun castOrNull(item: Any): M? =
-            try {
-                item as? M
-            } catch (e: Exception) {
-                null
-            }
+        try {
+            item as? M
+        } catch (e: Exception) {
+            null
+        }
 }
