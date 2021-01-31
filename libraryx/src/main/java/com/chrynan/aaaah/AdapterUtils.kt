@@ -32,6 +32,9 @@ inline fun <reified M : Any> anotherAdapter(
 inline fun <reified M : Any> anotherAdapterManager(vararg adapters: AnotherAdapter<*>) =
     ManagerRecyclerViewAdapter<M>(adapters = adapters.toSet())
 
+inline fun <reified M : Any> adapters(vararg adapters: AnotherAdapter<*>) =
+    ManagerRecyclerViewAdapter<M>(adapters = adapters.toSet())
+
 inline fun <reified M : Any> anotherAdapter(
     viewType: ViewType,
     viewResId: Int,
