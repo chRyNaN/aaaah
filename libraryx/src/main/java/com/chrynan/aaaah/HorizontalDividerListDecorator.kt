@@ -33,7 +33,11 @@ abstract class HorizontalDividerListDecorator : RecyclerView.ItemDecoration() {
             for (i in 0 until childCount) {
                 val child = getChildAt(i)
                 val adapterPosition = getChildAdapterPosition(child)
-                val adapterViewType = adapter?.getItemViewType(adapterPosition)
+                val adapterViewType = try {
+                    adapter?.getItemViewType(adapterPosition)
+                } catch (throwable: Throwable) {
+                    null
+                }
                 val isAdapterPositionValid =
                     adapterPosition != RecyclerView.NO_POSITION && adapterPosition != FIRST_POSITION
                 val shouldDrawTopDivider =
