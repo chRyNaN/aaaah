@@ -1,5 +1,7 @@
 package com.chrynan.aaaah
 
+import com.chrynan.dispatchers.dispatchers
+import com.chrynan.dispatchers.ui
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -10,8 +12,8 @@ import kotlinx.coroutines.flow.onEach
 class BaseAdapterItemHandler<VM : UniqueAdapterItem>(
     private val diffProcessor: DiffProcessor<VM>,
     private val diffDispatcher: DiffDispatcher<VM>,
-    private val processDispatcher: CoroutineDispatcher,
-    private val uiDispatcher: CoroutineDispatcher
+    private val processDispatcher: CoroutineDispatcher = dispatchers.io,
+    private val uiDispatcher: CoroutineDispatcher = dispatchers.main
 ) : AdapterItemHandler<VM> {
 
     @ExperimentalCoroutinesApi
