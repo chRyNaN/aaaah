@@ -40,8 +40,5 @@ publishing {
         jvm {
             artifactId = "aaaah-core-jvm"
         }
-        metadata {
-            artifactId = "aaaah-core-metadata"
-        }
     }
 }
