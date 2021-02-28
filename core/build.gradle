@@ -9,6 +9,8 @@ version LibraryConstants.versionName
 kotlin {
     targets {
         jvm()
+        js()
+        ios()
     }
     sourceSets {
         commonMain {
@@ -34,6 +36,15 @@ publishing {
         }
         jvm {
             artifactId = "aaaah-core-jvm"
+        }
+        js {
+            artifactId = "aaaah-core-js"
+        }
+        iosArm64 {
+            artifactId = "aaaah-core-ios-arm64"
+        }
+        iosX64 {
+            artifactId = "aaaah-core-ios-x64"
         }
     }
 }
