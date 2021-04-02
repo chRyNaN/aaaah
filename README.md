@@ -22,53 +22,6 @@ class EmojiListItemAdapter @Inject constructor() : AnotherAdapter<EmojiListItemV
 }
 ```
 
-## Building
-
-The library is provided through [Bintray](https://bintray.com/). Refer to
-the [releases](https://github.com/chRyNaN/aaaah/releases) for the latest version.
-
-### Repository
-
-```kotlin
-repositories {
-    maven {
-        url = uri("https://dl.bintray.com/chrynan/chrynan")
-    }
-}
-```
-
-### Dependencies
-
-**Android Library:**
-
-```groovy
-implementation 'com.chrynan.aaaah:aaaah-libraryx:VERSION'
-```
-
-**Core Common (Kotlin Multi-platform Classes):**
-
-```groovy
-implementation 'com.chrynan.aaaah:aaaah-core:VERSION'
-```
-
-**Annotations (Optional):**
-
-```groovy
-implementation 'com.chrynan.aaaah:aaaah-annotation:VERSION'
-```
-
-**Annotation Processor (Optional):**
-
-```groovy
-kapt 'com.chrynan.aaaah:aaaah-compiler:VERSION'
-```
-
-**DSL (Optional):**
-
-```groovy
-implementation 'com.chrynan.aaaah:aaaah-dsl:VERSION'
-```
-
 ## Using the Library
 
 * Create an `AnotherAdapter` implementation:
@@ -260,4 +213,73 @@ recyclerView?.bindAdapterFactory(myAdapterFactory)
 flowOf(myItems)
     .calculateAndDispatcherDiff(myAdapterFactory)
     .launchIn(this)
+```
+
+## Building the library
+
+The library is provided through [Repsy.io](https://repsy.io). Refer to
+the [releases](https://github.com/chRyNaN/aaaah/releases) for the latest version. <br/>
+<img alt="GitHub tag (latest by date)" src="https://img.shields.io/github/v/tag/chRyNaN/aaaah">
+
+### Repository
+
+```kotlin
+repositories {
+    maven { url = "https://repo.repsy.io/mvn/chrynan/public" }
+}
+```
+
+### Dependencies
+
+**Android Library:**
+
+```groovy
+implementation 'com.chrynan.aaaah:aaaah-libraryx:VERSION'
+```
+
+**Core Common (Kotlin Multi-platform Classes):**
+
+```groovy
+implementation 'com.chrynan.aaaah:aaaah-core:VERSION'
+```
+
+**Annotations (Optional):**
+
+```groovy
+implementation 'com.chrynan.aaaah:aaaah-annotation:VERSION'
+```
+
+**Annotation Processor (Optional):**
+
+```groovy
+kapt 'com.chrynan.aaaah:aaaah-compiler:VERSION'
+```
+
+**DSL (Optional):**
+
+```groovy
+implementation 'com.chrynan.aaaah:aaaah-dsl:VERSION'
+```
+
+## Documentation
+
+More detailed documentation is available in the [docs](docs) folder. The entry point to the documentation can be
+found [here](docs/index.md).
+
+## License
+
+```
+Copyright 2021 chRyNaN
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```

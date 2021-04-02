@@ -2,6 +2,8 @@ import com.chrynan.aaaah.buildSrc.LibraryConstants
 
 apply plugin: "kotlin-multiplatform"
 apply plugin: "maven-publish"
+apply plugin: "org.jetbrains.dokka"
+apply plugin: "com.chrynan.target.plugin"
 
 group LibraryConstants.group
 version LibraryConstants.versionName
@@ -17,9 +19,11 @@ kotlin {
             dependencies {
                 implementation "org.jetbrains.kotlin:kotlin-stdlib-common"
 
-                api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
+                api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
 
                 api "com.chrynan.dispatchers:dispatchers:0.1.1"
+
+                api "dev.andrewbailey.difference:difference:1.0.0"
             }
         }
     }
@@ -29,22 +33,37 @@ configurations {
     compileClasspath
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
 publishing {
-    publications {
-        kotlinMultiplatform {
-            artifactId = "aaaah-core"
+    repositories {
+        maven {
+            url "https://repo.repsy.io/mvn/chrynan/public"
+
+            credentials {
+                username = project.findProperty("repsyUsername") ?: System.getenv("repsyUsername")
+                password = project.findProperty("repsyToken") ?: System.getenv("repsyToken")
+            }
         }
-        jvm {
-            artifactId = "aaaah-core-jvm"
-        }
-        js {
-            artifactId = "aaaah-core-js"
-        }
-        iosArm64 {
-            artifactId = "aaaah-core-ios-arm64"
-        }
-        iosX64 {
-            artifactId = "aaaah-core-ios-x64"
+    }
+}
+
+// Target Information
+kotlinTargetDataGenerator {
+    generateJson = true
+    generateSvg = true
+    outputPath = "${projectDir.path}/targets"
+}
+
+// Documentation
+tasks.named("dokkaGfm") {
+    dokkaSourceSets {
+        configureEach {
+            includes.from("Module.md")
         }
     }
 }
