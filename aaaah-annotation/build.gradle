@@ -1,19 +1,30 @@
 import com.chrynan.aaaah.buildSrc.LibraryConstants
 
-apply plugin: "kotlin"
-apply plugin: "kotlin-kapt"
+apply plugin: "kotlin-multiplatform"
 apply plugin: "maven-publish"
 apply plugin: "org.jetbrains.dokka"
+apply plugin: "com.chrynan.target.plugin"
 
 group LibraryConstants.group
 version LibraryConstants.versionName
 
-repositories {
-    mavenCentral()
+kotlin {
+    targets {
+        jvm()
+        js()
+        ios()
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-common"
+            }
+        }
+    }
 }
 
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7"
+configurations {
+    compileClasspath
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -33,6 +44,13 @@ publishing {
             }
         }
     }
+}
+
+// Target Information
+kotlinTargetDataGenerator {
+    generateJson = true
+    generateSvg = true
+    outputPath = "${projectDir.path}/targets"
 }
 
 // Documentation
