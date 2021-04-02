@@ -1,9 +1,9 @@
 rootProject.name = "aaaah"
 
-include ":core"
-include ":libraryx"
-include ":annotation"
-include ":compiler"
-include ":dsl"
+include ":aaaah-core"
+include ":aaaah-android"
+include ":aaaah-annotation"
+include ":aaaah-compiler"
+include ":aaaah-android-dsl"
 
 enableFeaturePreview("GRADLE_METADATA")

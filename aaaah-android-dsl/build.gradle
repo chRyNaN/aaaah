@@ -26,9 +26,10 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7"
 
-    api project(":core")
+    implementation project(":aaaah-core")
+    implementation project(":aaaah-android")
 
     implementation "androidx.recyclerview:recyclerview:1.1.0"
 }
@@ -50,7 +51,6 @@ publishing {
             }
         }
     }
-
     publications {
         android.libraryVariants.all { variant ->
             "maven${variant.name.capitalize()}Aar"(MavenPublication) {
