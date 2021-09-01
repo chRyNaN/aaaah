@@ -3,6 +3,8 @@
 package com.chrynan.aaaah
 
 import androidx.recyclerview.widget.RecyclerView
+import com.chrynan.aaaah.diff.DiffResult
+import com.chrynan.aaaah.diff.DiffCalculator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -14,7 +16,7 @@ interface AdapterFactory<VM : UniqueAdapterItem> {
 
     val adapter: ManagerRecyclerViewAdapter<VM>
 
-    val diffUtilCalculator: DiffUtilCalculator<VM>
+    val diffUtilCalculator: DiffCalculator<VM>
 
     val diffProcessor: DiffProcessor<VM>
 

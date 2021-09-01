@@ -1,6 +1,8 @@
 package com.chrynan.aaaah
 
-class AndroidDiffProcessor<VM : UniqueAdapterItem>(private val diffUtilCalculator: DiffUtilCalculator<VM>) :
+import com.chrynan.aaaah.diff.DiffCalculator
+
+class AndroidDiffProcessor<VM : UniqueAdapterItem>(private val diffUtilCalculator: DiffCalculator<VM>) :
     DiffProcessor<VM> {
 
     override suspend fun processDiff(items: Collection<VM>): AndroidDiffResult<VM> {

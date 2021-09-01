@@ -1,6 +1,7 @@
 rootProject.name = "aaaah"
 
 include ":aaaah-core"
+include ":aaaah-diff"
 include ":aaaah-android"
 include ":aaaah-annotation"
 include ":aaaah-compiler"

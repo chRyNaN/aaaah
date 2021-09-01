@@ -3,6 +3,7 @@
 package com.chrynan.aaaah
 
 import androidx.recyclerview.widget.RecyclerView
+import com.chrynan.aaaah.diff.DiffCalculator
 import com.chrynan.dispatchers.dispatchers
 import kotlinx.coroutines.CoroutineDispatcher
 
@@ -17,7 +18,7 @@ abstract class BaseAdapterFactory<VM : UniqueAdapterItem> : AdapterFactory<VM> {
     override val decorators: List<RecyclerView.ItemDecoration> by lazy { emptyList<RecyclerView.ItemDecoration>() }
 
     @Suppress("RemoveExplicitTypeArguments") // For some reason the build fails without the explicit type parameter
-    override val diffUtilCalculator: DiffUtilCalculator<VM> by lazy { DiffUtilCalculator<VM>() }
+    override val diffUtilCalculator: DiffCalculator<VM> by lazy { com.chrynan.aaaah.diff.DiffCalculator<VM>() }
 
     override val diffProcessor: DiffProcessor<VM> by lazy {
         AndroidDiffProcessor(
@@ -33,7 +34,7 @@ abstract class BaseAdapterFactory<VM : UniqueAdapterItem> : AdapterFactory<VM> {
     }
 
     override val adapterItemHandler: AdapterItemHandler<VM> by lazy {
-        BaseAdapterItemHandler(
+        AdapterItemHandler(
             diffProcessor = diffProcessor,
             diffDispatcher = diffDispatcher,
             processDispatcher = processDispatcher,

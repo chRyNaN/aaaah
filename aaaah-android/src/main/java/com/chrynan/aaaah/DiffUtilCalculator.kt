@@ -26,7 +26,7 @@ open class DiffUtilCalculator<T : UniqueAdapterItem> : DiffUtil.Callback() {
     fun calculateDiff(sortedItems: List<T>): AndroidDiffResult<T> {
         currentList = sortedItems
         return AndroidDiffResult(
-            items = sortedItems,
+            updatedItems = sortedItems,
             diffUtilResult = DiffUtil.calculateDiff(this)
         )
     }
